@@ -7,6 +7,7 @@ import { SignInComponent } from './components/sign-in/sign-in.component';
 import { SignUpComponent } from './components/sign-up/sign-up.component';
 import { ForgotPasswordComponent } from './components/forgot-password/forgot-password.component';
 import { VerifyEmailComponent } from './components/verify-email/verify-email.component';
+import {FieldsetInputComponent} from './shared/components/fieldset-input/fieldset-input.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/sign-in', pathMatch: 'full' },
@@ -24,7 +25,8 @@ const routes: Routes = [
     SignInComponent,
     SignUpComponent,
     ForgotPasswordComponent,
-    VerifyEmailComponent
+    VerifyEmailComponent,
+    FieldsetInputComponent
   ],
   imports: [
     BrowserModule,
