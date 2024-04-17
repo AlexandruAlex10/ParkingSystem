@@ -1,0 +1,4 @@
+.sign-up-input {
+    @apply border-none text-sm text-c1 bg-c1 bg-opacity-0 outline-none w-full;
+  }
+  
