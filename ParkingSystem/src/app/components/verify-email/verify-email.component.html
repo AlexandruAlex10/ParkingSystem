@@ -1,1 +1,27 @@
-<p>verify-email works!</p>
+<div
+  class="flex justify-center h-[100vh] w-[100vw] bg-background bg-no-repeat bg-cover bg-center bg-fixed">
+
+  <div class="bg-c2/[.60] text-c1 p-8 z-50 m-auto text-center rounded">
+    <div class="text-[32px] mb-4">Thank You for Registering</div>
+    <div *ngIf="authService.userData as user">
+      <p class="text-center">We have sent a confirmation email to <strong>{{user.email}}</strong>.</p>
+      <p class="text-center">Please check your email and click on the link to verfiy your email address.</p>
+    </div>
+
+    <div class="mt-4">
+      <button type="button" class="flex gap-2 justify-center items-center bg-c6 p-2"
+              (click)="authService.SendVerificationMail()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+             class="w-6 h-6">
+          <path stroke-linecap="round" stroke-linejoin="round"
+                d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/>
+        </svg>
+        Resend Verification Email
+      </button>
+    </div>
+    <div class="flex gap-2 mt-2">
+      <div>Go back to?</div>
+      <button class="text-c4" routerLink="/sign-in"> Sign in</button>
+    </div>
+  </div>
+</div>
