@@ -1,36 +1,36 @@
 <div class="container" style="background-image: url('background.jpg'); background-repeat: no-repeat; background-attachment: fixed;">
 
-    <div class="card">
-      <div>
-        <form (submit)="onSubmit()">
-          <div class="form-group space">
-            <div>
-              Welcome! Here you can add plate numbers in the database and modify the parking's max capacity.
-              Currently, there are registered a total number of {{nrInmat.length}} vehicles.
-            </div>
-            <input class="form-control description" [formControl]= "nrInmatriculare" placeholder="Enter Plate Number">
+  <div class="card">
+    <div>
+      <form (submit)="onSubmit()">
+        <div class="form-group space">
+          <div>
+            Welcome! Here you can add plate numbers in the database and modify the parking's max capacity.
+            Currently, there are registered a total number of {{nrInmat.length}} vehicles.
           </div>
-          <div class="row space">
-  
-            <div class="trimite">
-              <button  type="submit" class="btn btn-success full">Submit!</button>
-            </div>
-  
+          <input class="form-control description" [formControl]= "nrInmatriculare" placeholder="Enter Plate Number">
+        </div>
+        <div class="row space">
+
+          <div class="trimite">
+            <button  type="submit" class="btn btn-success full">Submit!</button>
           </div>
-        </form>
-        <form (submit)="onSubmitCap()">
-          <div class="form-group space">
-            <input value="15" class="form-control description" [formControl]= "maxCap" placeholder="Enter Max Capacity">
+
+        </div>
+      </form>
+      <form (submit)="onSubmitCap()">
+        <div class="form-group space">
+          <input value="15" class="form-control description" [formControl]= "maxCap" placeholder="Enter Max Capacity">
+        </div>
+        <div class="row space">
+
+          <div class="trimite">
+            <button type="submit" class="btn btn-success full">Submit!</button>
           </div>
-          <div class="row space">
-  
-            <div class="trimite">
-              <button type="submit" class="btn btn-success full">Submit!</button>
-            </div>
-  
-          </div>
-        </form>
-      </div>
+
+        </div>
+      </form>
     </div>
-    <div class="container nrInmatricul" *ngFor="let nr of nrInmat">{{nr.nrInmatriculare}}</div>
   </div>
+  <div class="container nrInmatricul" *ngFor="let nr of nrInmat">{{nr.nrInmatriculare}}</div>
+</div>

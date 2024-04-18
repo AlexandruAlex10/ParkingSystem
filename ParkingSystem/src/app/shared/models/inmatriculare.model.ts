@@ -1,4 +1,4 @@
-export interface inmatriculareModel{
-    key?: string | null,
-    nrInmatriculare?: string
-  }
+export interface inmatriculareModel {
+  key?: string | null,
+  nrInmatriculare?: string
+}
