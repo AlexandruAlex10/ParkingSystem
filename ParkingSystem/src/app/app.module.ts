@@ -1,26 +1,28 @@
-import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
-import { Routes, RouterModule } from '@angular/router';
-import { AppComponent } from './app.component';
-import { DashboardComponent } from './components/dashboard/dashboard.component';
-import { SignInComponent } from './components/sign-in/sign-in.component';
-import { SignUpComponent } from './components/sign-up/sign-up.component';
-import { ForgotPasswordComponent } from './components/forgot-password/forgot-password.component';
-import { VerifyEmailComponent } from './components/verify-email/verify-email.component';
+import {NgModule} from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
+import {AppComponent} from './app.component';
+import {HomeComponent} from './components/home/home.component';
+import {AppRoutingModule} from "./app-routing.module";
+import {DashboardComponent} from './components/dashboard/dashboard.component';
+import {SignInComponent} from './components/sign-in/sign-in.component';
+import {SignUpComponent} from './components/sign-up/sign-up.component';
+import {ForgotPasswordComponent} from './components/forgot-password/forgot-password.component';
+import {VerifyEmailComponent} from './components/verify-email/verify-email.component';
+import {AuthService} from "./shared/services/auth.service";
+import {AngularFireAuthModule} from "@angular/fire/compat/auth";
+import {AngularFirestoreModule} from "@angular/fire/compat/firestore";
+import {AngularFireStorageModule} from "@angular/fire/compat/storage";
+import {AngularFireDatabaseModule} from "@angular/fire/compat/database";
+import {AngularFireModule} from "@angular/fire/compat";
+import {environment} from "../environment/environment";
 import {FieldsetInputComponent} from './shared/components/fieldset-input/fieldset-input.component';
+import {ReactiveFormsModule} from "@angular/forms";
 
-const routes: Routes = [
-  { path: '', redirectTo: '/sign-in', pathMatch: 'full' },
-  { path: 'sign-in', component: SignInComponent },
-  { path: 'register-user', component: SignUpComponent },
-  { path: 'dashboard', component: DashboardComponent },
-  { path: 'forgot-password', component: ForgotPasswordComponent },
-  { path: 'verify-email-address', component: VerifyEmailComponent },
-];
 
 @NgModule({
   declarations: [
     AppComponent,
+    HomeComponent,
     DashboardComponent,
     SignInComponent,
     SignUpComponent,
@@ -29,11 +31,17 @@ const routes: Routes = [
     FieldsetInputComponent
   ],
   imports: [
+    AngularFireModule.initializeApp(environment.firebase),
+    AngularFireAuthModule,
+    AngularFirestoreModule,
+    AngularFireStorageModule,
+    AngularFireDatabaseModule,
     BrowserModule,
-    RouterModule.forRoot(routes)
+    AppRoutingModule,
+    ReactiveFormsModule
   ],
-  exports: [RouterModule],
-  providers: [],
+  providers: [AuthService],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+}
