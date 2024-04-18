@@ -8,7 +8,9 @@ import {Firestore} from "@angular/fire/firestore";
 @Injectable({
   providedIn: 'root'
 })
+
 export class InmatriculareService {
+
   private dbPath = '/nrInmatriculare';
   private dbPathMax = '/nrLocuri'
   inmatriculare: AngularFireList<inmatriculareModel>;
@@ -18,6 +20,7 @@ export class InmatriculareService {
     this.inmatriculare = db.list(this.dbPath);
     console.log(db.list(this.dbPath));
   }
+
   getNr():number{
     const db = getDatabase();
     const starCountRef = ref(db, this.dbPathMax);
@@ -27,6 +30,7 @@ export class InmatriculareService {
     });
     return this.maxCapacity;
   }
+
   getAll(): AngularFireList<inmatriculareModel> {
     return this.inmatriculare;
   }
@@ -39,6 +43,7 @@ export class InmatriculareService {
       nrInmatriculare: numar,
     });
   }
+
   postNumber(nr: string | null){
     const db = getDatabase();
     const postListRef = ref(db, this.dbPathMax);
@@ -47,9 +52,10 @@ export class InmatriculareService {
       maxCapacity: nr,
     });
   }
- async deleteNumarInmatriculare(nr: any) {
+
+  async deleteNumarInmatriculare(nr: any) {
     const db = getDatabase();
-     await deleteDoc(doc(<Firestore><unknown>db, this.dbPath,nr.value));
+      await deleteDoc(doc(<Firestore><unknown>db, this.dbPath,nr.value));
   }
 
 }

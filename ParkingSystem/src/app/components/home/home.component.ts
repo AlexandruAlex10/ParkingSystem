@@ -35,13 +35,11 @@ export class HomeComponent implements OnInit{
   public onSubmit() {
     console.log(this.nrInmatriculare.value);
     this.inmatriculareService.post(this.nrInmatriculare.value)
-
   }
 
   public onSubmitCap() {
     console.log(this.nrInmatriculare.value);
     this.inmatriculareService.postNumber(this.maxCap.value);
-
   }
 
   deleteNumar(nr : any) {
