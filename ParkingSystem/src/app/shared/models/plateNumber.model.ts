@@ -1,4 +1,4 @@
-export interface inmatriculareModel {
+export interface plateNumberModel {
   key?: string | null,
   nrInmatriculare?: string
 }

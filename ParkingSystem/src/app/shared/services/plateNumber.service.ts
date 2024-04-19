@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import {AngularFireDatabase, AngularFireList} from "@angular/fire/compat/database";
-import {getDatabase, push, ref, set,onValue, update} from "firebase/database";
-import {inmatriculareModel} from "../models/inmatriculare.model";
+import { AngularFireDatabase, AngularFireList } from "@angular/fire/compat/database";
+import { getDatabase, push, ref, set, onValue, update } from "firebase/database";
+import { plateNumberModel } from "../models/plateNumber.model";
 import { doc, deleteDoc } from "firebase/firestore";
-import {Firestore} from "@angular/fire/firestore";
+import { Firestore } from "@angular/fire/firestore";
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -14,8 +14,8 @@ export class InmatriculareService {
 
   private dbPath = '/nrInmatriculare';
   private dbPathMax = '/nrLocuri'
-  inmatriculare: AngularFireList<inmatriculareModel>;
-  maxCapacity: number=0;
+  inmatriculare: AngularFireList<plateNumberModel>;
+  maxCapacity: number = 0;
 
   constructor(private db: AngularFireDatabase) {
     this.inmatriculare = db.list(this.dbPath);
@@ -33,11 +33,11 @@ export class InmatriculareService {
     });
   }
 
-  getAllPlateNumbers(): AngularFireList<inmatriculareModel> {
+  getAllPlateNumbers(): AngularFireList<plateNumberModel> {
     return this.inmatriculare;
   }
 
-  post(numar: string | null){
+  post(numar: string | null) {
     const db = getDatabase();
     const postListRef = ref(db, this.dbPath);
     const newPostRef = push(postListRef);
@@ -46,7 +46,7 @@ export class InmatriculareService {
     });
   }
 
-  updateMaxCapacity(nr: string | null){
+  updateMaxCapacity(nr: string | null) {
     const db = getDatabase();
     const postListRef = ref(db, this.dbPathMax);
     const updates: Record<string, any> = {};
@@ -56,7 +56,7 @@ export class InmatriculareService {
 
   async deleteNumarInmatriculare(nr: any) {
     const db = getDatabase();
-      await deleteDoc(doc(<Firestore><unknown>db, this.dbPath, nr.value));
+    await deleteDoc(doc(<Firestore><unknown>db, this.dbPath, nr.value));
   }
 
 }

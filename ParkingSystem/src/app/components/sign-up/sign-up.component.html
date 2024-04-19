@@ -1,16 +1,10 @@
-<div
-  class="flex justify-center h-[100vh] w-[100vw] bg-background bg-no-repeat bg-cover bg-center bg-fixed">
+<div class="flex justify-center h-[100vh] w-[100vw] bg-background bg-no-repeat bg-cover bg-center bg-fixed">
 
   <div class="bg-c2/[.60] text-c1 p-8 z-50 m-auto text-center rounded">
     <div class="text-[32px]">Sign Up</div>
     <div class="flex flex-col my-4 gap-2">
       <app-fieldset-input label="Email Address">
-        <input
-          type="email"
-          class="sign-up-input"
-          #userEmail
-          required
-        />
+        <input type="email" class="sign-up-input" #userEmail required />
       </app-fieldset-input>
       <app-fieldset-input label="Password">
         <input type="password" class="sign-up-input" #userPassword required>
@@ -24,9 +18,9 @@
     </div>
     <button type="button" class="flex items-center justify-center gap-2 w-full my-4" (click)="authService.GoogleAuth()">
       <svg class="h-8 w-8 text-c6" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
-           fill="none" stroke-linecap="round" stroke-linejoin="round">
-        <path stroke="none" d="M0 0h24v24H0z"/>
-        <path d="M17.788 5.108A9 9 0 1021 12h-8"/>
+        fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" />
+        <path d="M17.788 5.108A9 9 0 1021 12h-8" />
       </svg>
       Continue with Google
     </button>

@@ -1,23 +1,26 @@
-import {Component, OnInit} from '@angular/core';
-import {FormControl, Validators, ɵFormGroupValue, ɵTypedOrUntyped} from "@angular/forms";
-import {map} from "rxjs";
-import {InmatriculareService} from "../../shared/services/inmatriculare.service";
-import {inmatriculareModel} from "../../shared/models/inmatriculare.model";
+import { Component, OnInit } from '@angular/core';
+import { FormControl } from "@angular/forms";
+import { map } from "rxjs";
+import { InmatriculareService } from "../../shared/services/plateNumber.service";
+import { plateNumberModel } from "../../shared/models/plateNumber.model";
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
+
 export class HomeComponent implements OnInit {
 
-  public nrInmat: inmatriculareModel[]= [];
+  public plateNumbers: plateNumberModel[] = [];
   public maxCapacity: number = 0;
-  public nrInmatriculare = new FormControl('', Validators.required)
-  public maxCap = new FormControl('', Validators.required)
 
-  constructor(protected inmatriculareService: InmatriculareService){
+  public plateNumberForm = new FormControl('');
+  public maxCapacityForm = new FormControl('');
+
+  constructor(protected inmatriculareService: InmatriculareService) {
   }
+
   ngOnInit() {
     this.inmatriculareService.getAllPlateNumbers()!.snapshotChanges().pipe(
       map(changes =>
@@ -26,7 +29,7 @@ export class HomeComponent implements OnInit {
         )
       )
     ).subscribe(data => {
-      this.nrInmat = data;
+      this.plateNumbers = data;
       console.log(data)
     });
 
@@ -37,16 +40,43 @@ export class HomeComponent implements OnInit {
   }
 
   public onSubmitPlateNumber() {
-    console.log(this.nrInmatriculare.value);
-    this.inmatriculareService.post(this.nrInmatriculare.value)
+    if (this.plateNumberForm.value == '') {
+      this.alertMessageEmpty();
+      return;
+    }
+    else {
+      console.log(this.plateNumberForm.value);
+      this.inmatriculareService.post(this.plateNumberForm.value)
+    }
   }
 
   public onSubmitMaxCapacity() {
-    console.log(this.nrInmatriculare.value);
-    this.inmatriculareService.updateMaxCapacity(this.maxCap.value);
+    if (this.maxCapacityForm.value == '') {
+      this.alertMessageEmpty();
+      return;
+    }
+    else {
+      if (this.maxCapacityForm.value != null) {
+        const maxCapValue = parseInt(this.maxCapacityForm.value);
+        if (isNaN(maxCapValue) || maxCapValue < 1 || maxCapValue > 999) {
+          this.alertMessageInvalid();
+          return;
+        }
+      }
+      console.log(this.maxCapacityForm.value);
+      this.inmatriculareService.updateMaxCapacity(this.maxCapacityForm.value);
+    }
   }
 
-  deletePlateNumber(nr : any) {
+  deletePlateNumber(nr: any) {
     this.inmatriculareService.deleteNumarInmatriculare(nr);
+  }
+
+  public alertMessageEmpty() {
+    alert("Operation aborted: field was empty!");
+  }
+
+  public alertMessageInvalid() {
+    alert("Operation aborted: field was invalid!");
   }
 }
