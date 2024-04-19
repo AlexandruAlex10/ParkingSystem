@@ -65,9 +65,10 @@
 }
 
 .w-input{
+  outline: none;
   color: #333;
   background-color: #fff;
-  border: 1px solid #ccc;
+  border: 2px solid rgba(230, 124, 45, .85);
   width: 100%;
   height: 38px;
   margin-bottom: 10px;

@@ -22,16 +22,6 @@ export class InmatriculareService {
     console.log(db.list(this.dbPath));
   }
 
-  getNr():number{
-    const db = getDatabase();
-    const starCountRef = ref(db, this.dbPathMax);
-    onValue(starCountRef, (snapshot) => {
-      const data = snapshot.val();
-      this.maxCapacity=data;
-    });
-    return this.maxCapacity;
-  }
-
   getMaxCapacity(): Observable<number> {
     const db = getDatabase();
     const starCountRef = ref(db, this.dbPathMax);
@@ -43,7 +33,7 @@ export class InmatriculareService {
     });
   }
 
-  getAll(): AngularFireList<inmatriculareModel> {
+  getAllPlateNumbers(): AngularFireList<inmatriculareModel> {
     return this.inmatriculare;
   }
 
@@ -56,7 +46,7 @@ export class InmatriculareService {
     });
   }
 
-  updateNumber(nr: string | null){
+  updateMaxCapacity(nr: string | null){
     const db = getDatabase();
     const postListRef = ref(db, this.dbPathMax);
     const updates: Record<string, any> = {};

@@ -9,13 +9,17 @@ import {inmatriculareModel} from "../../shared/models/inmatriculare.model";
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
-export class HomeComponent implements OnInit{
+export class HomeComponent implements OnInit {
+
   public nrInmat: inmatriculareModel[]= [];
   public maxCapacity: number = 0;
+  public nrInmatriculare = new FormControl('', Validators.required)
+  public maxCap = new FormControl('', Validators.required)
+
   constructor(protected inmatriculareService: InmatriculareService){
   }
   ngOnInit() {
-    this.inmatriculareService.getAll()!.snapshotChanges().pipe(
+    this.inmatriculareService.getAllPlateNumbers()!.snapshotChanges().pipe(
       map(changes =>
         changes.map(c =>
           ({ key: c.payload.key, ...c.payload.val() })
@@ -27,25 +31,22 @@ export class HomeComponent implements OnInit{
     });
 
     this.inmatriculareService.getMaxCapacity().subscribe((maxCapacity) => {
-      console.log('Max Capacity:', maxCapacity);
+      console.log(maxCapacity);
       this.maxCapacity = maxCapacity;
     });
   }
-    public nrInmatriculare = new FormControl('', Validators.required)
-    public maxCap = new FormControl('', Validators.required)
 
-
-  public onSubmit() {
+  public onSubmitPlateNumber() {
     console.log(this.nrInmatriculare.value);
     this.inmatriculareService.post(this.nrInmatriculare.value)
   }
 
-  public onSubmitCap() {
+  public onSubmitMaxCapacity() {
     console.log(this.nrInmatriculare.value);
-    this.inmatriculareService.updateNumber(this.maxCap.value);
+    this.inmatriculareService.updateMaxCapacity(this.maxCap.value);
   }
 
-  deleteNumar(nr : any) {
+  deletePlateNumber(nr : any) {
     this.inmatriculareService.deleteNumarInmatriculare(nr);
   }
 }
