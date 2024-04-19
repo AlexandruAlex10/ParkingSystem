@@ -2,7 +2,7 @@
   <div class="div-block">
     <h1 class="heading-2">Welcome!</h1>
     <h3 class="heading-3">Total registered plate numbers: {{nrInmat.length}}</h3>
-    <h3 class="heading-3">Parking lot capacity: {{maxCapacity}}</h3>
+    <h3 class="heading-3">Parking lot capacity: -/{{maxCapacity}}</h3>
     <div class="w-form">
       <form (submit)="onSubmit()" class="form">
         <input [formControl]="nrInmatriculare" class="text-field w-input" placeholder="Register new plate number">

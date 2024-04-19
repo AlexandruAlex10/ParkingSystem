@@ -1,8 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {FormControl, Validators, ɵFormGroupValue, ɵTypedOrUntyped} from "@angular/forms";
-import {finalize, map} from "rxjs";
-import firebase from "firebase/compat";
-import { getDatabase, ref, push, set } from "firebase/database";
+import {map} from "rxjs";
 import {InmatriculareService} from "../../shared/services/inmatriculare.service";
 import {inmatriculareModel} from "../../shared/models/inmatriculare.model";
 
@@ -14,7 +12,7 @@ import {inmatriculareModel} from "../../shared/models/inmatriculare.model";
 export class HomeComponent implements OnInit{
   public nrInmat: inmatriculareModel[]= [];
   public maxCapacity: number = 0;
-  constructor(private inmatriculareService: InmatriculareService){
+  constructor(protected inmatriculareService: InmatriculareService){
   }
   ngOnInit() {
     this.inmatriculareService.getAll()!.snapshotChanges().pipe(
@@ -26,6 +24,11 @@ export class HomeComponent implements OnInit{
     ).subscribe(data => {
       this.nrInmat = data;
       console.log(data)
+    });
+
+    this.inmatriculareService.getMaxCapacity().subscribe((maxCapacity) => {
+      console.log('Max Capacity:', maxCapacity);
+      this.maxCapacity = maxCapacity;
     });
   }
     public nrInmatriculare = new FormControl('', Validators.required)
@@ -39,7 +42,7 @@ export class HomeComponent implements OnInit{
 
   public onSubmitCap() {
     console.log(this.nrInmatriculare.value);
-    this.inmatriculareService.postNumber(this.maxCap.value);
+    this.inmatriculareService.updateNumber(this.maxCap.value);
   }
 
   deleteNumar(nr : any) {
