@@ -19,7 +19,6 @@ export class InmatriculareService {
 
   constructor(private db: AngularFireDatabase) {
     this.inmatriculare = db.list(this.dbPath);
-    console.log(db.list(this.dbPath));
   }
 
   getMaxCapacity(): Observable<number> {

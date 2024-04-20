@@ -16,15 +16,15 @@
       <input type="submit" class="submit-button" value="Submit!">
     </form>
   </div>
-
   <div class="div-block">
     <h3 class="heading-3">Search registered plate numbers:</h3>
     <form class="form">
-      <input [(ngModel)]="searchText" class="text-field" placeholder="Search plate number..." onfocus="this.placeholder = ''" onblur="this.placeholder = 'Search plate number...'" (input)="onSearch()">
+      <input class="text-field" placeholder="Search plate number..." onfocus="this.placeholder = ''" onblur="this.placeholder = 'Search plate number...'" #filter>
+      <button class="submit-button" type="button" (click)="filterResults(filter.value)">Search!</button>
     </form>
+    <h3 class="heading-3">Results: {{filteredPlateNumbers.length}}</h3>
   </div>
-
   <ul class="list">
-    <li class="list-item" *ngFor="let nr of plateNumbers">{{nr.nrInmatriculare}}</li>
+    <li class="list-item" *ngFor="let nr of filteredPlateNumbers">{{nr.nrInmatriculare}}</li>
   </ul>
 </div>

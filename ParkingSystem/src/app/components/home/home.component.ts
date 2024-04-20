@@ -34,11 +34,9 @@ export class HomeComponent implements OnInit {
     ).subscribe(data => {
       this.plateNumbers = data;
       this.filteredPlateNumbers = data;
-      console.log(data)
     });
 
     this.inmatriculareService.getMaxCapacity().subscribe((maxCapacity) => {
-      console.log(maxCapacity);
       this.maxCapacity = maxCapacity;
     });
   }
@@ -57,7 +55,6 @@ export class HomeComponent implements OnInit {
           return;
         }
       }
-      console.log(this.plateNumberInput.value);
       this.inmatriculareService.post(this.plateNumberInput.value);
       this.plateNumberInput.reset('');
     }
@@ -77,15 +74,18 @@ export class HomeComponent implements OnInit {
           return;
         }
       }
-      console.log(this.maxCapacityInput.value);
       this.inmatriculareService.updateMaxCapacity(this.maxCapacityInput.value);
       this.maxCapacityInput.reset('');
     }
   }
 
-  public onSearch() {
-    this.filteredPlateNumbers = this.plateNumbers.filter(nr =>
-      nr.nrInmatriculare && nr.nrInmatriculare.includes(this.searchText)
+  filterResults(text: string) {
+    if (!text) {
+      this.filteredPlateNumbers = this.plateNumbers;
+      return;
+    }
+    this.filteredPlateNumbers = this.plateNumbers.filter(
+      plateNumbers => plateNumbers?.nrInmatriculare?.toLowerCase().includes(text.toLowerCase())
     );
   }
 
