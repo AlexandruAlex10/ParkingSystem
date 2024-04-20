@@ -13,7 +13,10 @@ import { plateNumberModel } from "../../shared/models/plateNumber.model";
 export class HomeComponent implements OnInit {
 
   public plateNumbers: plateNumberModel[] = [];
+  public filteredPlateNumbers: plateNumberModel[] = [];
+  
   public maxCapacity: number = 0;
+  public searchText: string = '';
 
   public plateNumberInput = new FormControl('');
   public maxCapacityInput = new FormControl('');
@@ -30,6 +33,7 @@ export class HomeComponent implements OnInit {
       )
     ).subscribe(data => {
       this.plateNumbers = data;
+      this.filteredPlateNumbers = data;
       console.log(data)
     });
 
@@ -54,7 +58,8 @@ export class HomeComponent implements OnInit {
         }
       }
       console.log(this.plateNumberInput.value);
-      this.inmatriculareService.post(this.plateNumberInput.value)
+      this.inmatriculareService.post(this.plateNumberInput.value);
+      this.plateNumberInput.reset('');
     }
   }
 
@@ -74,7 +79,14 @@ export class HomeComponent implements OnInit {
       }
       console.log(this.maxCapacityInput.value);
       this.inmatriculareService.updateMaxCapacity(this.maxCapacityInput.value);
+      this.maxCapacityInput.reset('');
     }
+  }
+
+  public onSearch() {
+    this.filteredPlateNumbers = this.plateNumbers.filter(nr =>
+      nr.nrInmatriculare && nr.nrInmatriculare.includes(this.searchText)
+    );
   }
 
   deletePlateNumber(nr: any) {

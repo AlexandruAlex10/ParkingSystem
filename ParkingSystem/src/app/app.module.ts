@@ -17,6 +17,7 @@ import { AngularFireModule } from "@angular/fire/compat";
 import { environment } from "../environment/environment";
 import { FieldsetInputComponent } from './shared/components/fieldset-input/fieldset-input.component';
 import { ReactiveFormsModule } from "@angular/forms";
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -37,7 +38,8 @@ import { ReactiveFormsModule } from "@angular/forms";
     AngularFireDatabaseModule,
     BrowserModule,
     AppRoutingModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    FormsModule
   ],
   providers: [AuthService],
   bootstrap: [AppComponent]

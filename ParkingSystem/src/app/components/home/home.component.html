@@ -18,10 +18,9 @@
   </div>
 
   <div class="div-block">
-    <h3 class="heading-3">Search plate numbers database:</h3>
-    <form (submit)="onSubmitMaxCapacity()" class="form">
-      <input class="text-field" placeholder="Search plate number..." onfocus="this.placeholder = ''" onblur="this.placeholder = 'Search plate number...'">
-      <button type="submit" class="submit-button">Submit</button>
+    <h3 class="heading-3">Search registered plate numbers:</h3>
+    <form class="form">
+      <input [(ngModel)]="searchText" class="text-field" placeholder="Search plate number..." onfocus="this.placeholder = ''" onblur="this.placeholder = 'Search plate number...'" (input)="onSearch()">
     </form>
   </div>
 
