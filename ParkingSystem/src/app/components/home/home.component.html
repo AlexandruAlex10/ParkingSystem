@@ -3,13 +3,10 @@
     <h1 class="heading-2">Welcome</h1>
   </div>
   <div class="div-block">
-    <h3 class="heading-3">Total registered plate numbers:
-      <span style="color: #9BCC32">{{plateNumbers.length}}</span>
-    </h3>
-    <form (submit)="onSubmitPlateNumber()" class="form">
-      <input [formControl]="plateNumberInput" class="text-field" placeholder="Register new plate number..."
-        onfocus="this.placeholder = ''" onblur="this.placeholder = 'Register new plate number...'">
-      <input type="submit" class="submit-button" value="Submit">
+    <h3 class="heading-3">Admin controls:</h3>
+    <form class="form">
+      <button class="submit-button" type="button">Open barrier indefinitely</button>
+      <button class="submit-button" type="button">Close barrier indefinitely</button>
     </form>
   </div>
   <div class="div-block">
@@ -22,6 +19,26 @@
       <input type="submit" class="submit-button" value="Submit">
     </form>
   </div>
+  <div class="div-block">
+    <h3 class="heading-3">Total registered plate numbers:
+      <span style="color: #9BCC32">{{plateNumbers.length}}</span>
+    </h3>
+    <form (submit)="onSubmitPlateNumber()" class="form">
+      <input [formControl]="plateNumberInput" class="text-field" placeholder="Register new plate number..."
+        onfocus="this.placeholder = ''" onblur="this.placeholder = 'Register new plate number...'">
+      <input type="submit" class="submit-button" value="Submit">
+    </form>
+  </div>
+
+  <div class="div-block">
+    <h3 class="heading-3">Delete registered plate number:</h3>
+    <form class="form">
+      <input class="text-field" placeholder="Delete plate number..."
+        onfocus="this.placeholder = ''" onblur="this.placeholder = 'Delete plate number...'">
+      <input type="submit" class="submit-button" value="Submit">
+    </form>
+  </div>
+
   <div class="div-block">
     <h3 class="heading-3">Search registered plate numbers:</h3>
     <form class="form">
