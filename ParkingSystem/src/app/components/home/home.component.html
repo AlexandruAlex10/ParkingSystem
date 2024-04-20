@@ -1,12 +1,16 @@
 <div class="background">
     <div class="div-block">
       <h1 class="heading-2">Welcome!</h1>
+    </div>
+    <div class="div-block">
       <h3 class="heading-3">Total registered plate numbers: {{plateNumbers.length}}</h3>
-      <h3 class="heading-3">Parking lot capacity: -/{{maxCapacity}}</h3>
       <form (submit)="onSubmitPlateNumber()" class="form">
         <input [formControl]="plateNumberInput" class="text-field" placeholder="Register new plate number">
         <input type="submit" class="submit-button" value="Submit!">
       </form>
+    </div>
+    <div class="div-block">
+      <h3 class="heading-3">Parking lot capacity: -/{{maxCapacity}}</h3>
       <form (submit)="onSubmitMaxCapacity()" class="form">
         <input [formControl]="maxCapacityInput" class="text-field" placeholder="Modify capacity">
         <input type="submit" class="submit-button" value="Submit!">
