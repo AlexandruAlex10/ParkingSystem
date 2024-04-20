@@ -6,7 +6,7 @@
 
 .div-block {
   background-color: rgba(184, 184, 183, .85);
-  opacity: .75;
+  opacity: .80;
   margin-bottom: 50px;
 }
 
@@ -29,6 +29,7 @@
 }
 
 .text-field {
+  margin-top: 5px;
   border-radius: 10px;
   opacity: .95;
   text-align: center;

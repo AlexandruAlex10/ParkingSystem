@@ -1,22 +1,31 @@
 <div class="background">
-    <div class="div-block">
-      <h1 class="heading-2">Welcome!</h1>
-    </div>
-    <div class="div-block">
-      <h3 class="heading-3">Total registered plate numbers: {{plateNumbers.length}}</h3>
-      <form (submit)="onSubmitPlateNumber()" class="form">
-        <input [formControl]="plateNumberInput" class="text-field" placeholder="Register new plate number">
-        <input type="submit" class="submit-button" value="Submit!">
-      </form>
-    </div>
-    <div class="div-block">
-      <h3 class="heading-3">Parking lot capacity: -/{{maxCapacity}}</h3>
-      <form (submit)="onSubmitMaxCapacity()" class="form">
-        <input [formControl]="maxCapacityInput" class="text-field" placeholder="Modify capacity">
-        <input type="submit" class="submit-button" value="Submit!">
-      </form>
-    </div>
-    <ul class="list">
-      <li class="list-item" *ngFor="let nr of plateNumbers">{{nr.nrInmatriculare}}</li>
-    </ul>
+  <div class="div-block">
+    <h1 class="heading-2">Welcome!</h1>
+  </div>
+  <div class="div-block">
+    <h3 class="heading-3">Total registered plate numbers: {{plateNumbers.length}}</h3>
+    <form (submit)="onSubmitPlateNumber()" class="form">
+      <input [formControl]="plateNumberInput" class="text-field" placeholder="Register new plate number..." onfocus="this.placeholder = ''" onblur="this.placeholder = 'Register new plate number...'">
+      <input type="submit" class="submit-button" value="Submit!">
+    </form>
+  </div>
+  <div class="div-block">
+    <h3 class="heading-3">Parking lot capacity: -/{{maxCapacity}}</h3>
+    <form (submit)="onSubmitMaxCapacity()" class="form">
+      <input [formControl]="maxCapacityInput" class="text-field" placeholder="Modify capacity..." onfocus="this.placeholder = ''" onblur="this.placeholder = 'Modify capacity...'">
+      <input type="submit" class="submit-button" value="Submit!">
+    </form>
+  </div>
+
+  <div class="div-block">
+    <h3 class="heading-3">Search plate numbers database:</h3>
+    <form (submit)="onSubmitMaxCapacity()" class="form">
+      <input class="text-field" placeholder="Search plate number..." onfocus="this.placeholder = ''" onblur="this.placeholder = 'Search plate number...'">
+      <button type="submit" class="submit-button">Submit</button>
+    </form>
+  </div>
+
+  <ul class="list">
+    <li class="list-item" *ngFor="let nr of plateNumbers">{{nr.nrInmatriculare}}</li>
+  </ul>
 </div>
