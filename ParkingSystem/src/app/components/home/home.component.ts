@@ -15,8 +15,8 @@ export class HomeComponent implements OnInit {
   public plateNumbers: plateNumberModel[] = [];
   public maxCapacity: number = 0;
 
-  public plateNumberForm = new FormControl('');
-  public maxCapacityForm = new FormControl('');
+  public plateNumberInput = new FormControl('');
+  public maxCapacityInput = new FormControl('');
 
   constructor(protected inmatriculareService: InmatriculareService) {
   }
@@ -40,31 +40,40 @@ export class HomeComponent implements OnInit {
   }
 
   public onSubmitPlateNumber() {
-    if (this.plateNumberForm.value == '') {
+    if (this.plateNumberInput.value == '') {
       this.alertMessageEmpty();
       return;
     }
     else {
-      console.log(this.plateNumberForm.value);
-      this.inmatriculareService.post(this.plateNumberForm.value)
+      if (this.plateNumberInput.value != null) {
+        const regexPlateNumber = /^(((AB|AG|AR|BC|BH|BN|BR|BT|BV|BZ|CJ|CL|CS|CT|CV|DB|DJ|GJ|GL|GR|HD|HR|IF|IL|IS|MH|MM|MS|NT|OT|PH|SB|SJ|SM|SV|TL|TM|TR|VL|VN|VS) (0[1-9]|[1-9][0-9]))|(B (0[1-9]|[1-9][0-9]{1,2}))) ([A-HJ-NPR-Z][A-PR-Z]{2})$/;
+        const isMatch = regexPlateNumber.test(this.plateNumberInput.value);
+        if (!isMatch) {
+          this.alertMessageInvalidPlateNumber();
+          return;
+        }
+      }
+      console.log(this.plateNumberInput.value);
+      this.inmatriculareService.post(this.plateNumberInput.value)
     }
   }
 
   public onSubmitMaxCapacity() {
-    if (this.maxCapacityForm.value == '') {
+    if (this.maxCapacityInput.value == '') {
       this.alertMessageEmpty();
       return;
     }
     else {
-      if (this.maxCapacityForm.value != null) {
-        const maxCapValue = parseInt(this.maxCapacityForm.value);
-        if (isNaN(maxCapValue) || maxCapValue < 1 || maxCapValue > 999) {
-          this.alertMessageInvalid();
+      if (this.maxCapacityInput.value != null) {
+        const regexMaxCapacity = /^(([1-9])|([1-9][0-9]{1,2}))$/;
+        const isMatch = regexMaxCapacity.test(this.maxCapacityInput.value);
+        if (!isMatch) {
+          this.alertMessageInvalidMaxCapacity();
           return;
         }
       }
-      console.log(this.maxCapacityForm.value);
-      this.inmatriculareService.updateMaxCapacity(this.maxCapacityForm.value);
+      console.log(this.maxCapacityInput.value);
+      this.inmatriculareService.updateMaxCapacity(this.maxCapacityInput.value);
     }
   }
 
@@ -76,7 +85,11 @@ export class HomeComponent implements OnInit {
     alert("Operation aborted: field was empty!");
   }
 
-  public alertMessageInvalid() {
-    alert("Operation aborted: field was invalid!");
+  public alertMessageInvalidPlateNumber() {
+    alert("Operation aborted: field was invalid!\n\nRules:\nhttps://en.wikipedia.org/wiki/Vehicle_registration_plates_of_Romania");
+  }
+
+  public alertMessageInvalidMaxCapacity() {
+    alert("Operation aborted: field was invalid!\n\nPlease enter a number between 1 and 999");
   }
 }

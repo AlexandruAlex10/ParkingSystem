@@ -1,22 +1,18 @@
-<body class="body">
-  <div class="div-block">
-    <h1 class="heading-2">Welcome!</h1>
-    <h3 class="heading-3">Total registered plate numbers: {{plateNumbers.length}}</h3>
-    <h3 class="heading-3">Parking lot capacity: -/{{maxCapacity}}</h3>
-    <div class="w-form">
+<div class="background">
+    <div class="div-block">
+      <h1 class="heading-2">Welcome!</h1>
+      <h3 class="heading-3">Total registered plate numbers: {{plateNumbers.length}}</h3>
+      <h3 class="heading-3">Parking lot capacity: -/{{maxCapacity}}</h3>
       <form (submit)="onSubmitPlateNumber()" class="form">
-        <input [formControl]="plateNumberForm" class="text-field w-input" placeholder="Register new plate number">
-        <input type="submit" class="submit-button w-button" value="Submit!">
+        <input [formControl]="plateNumberInput" class="text-field" placeholder="Register new plate number">
+        <input type="submit" class="submit-button" value="Submit!">
       </form>
-    </div>
-    <div class="w-form">
       <form (submit)="onSubmitMaxCapacity()" class="form">
-        <input [formControl]="maxCapacityForm" class="text-field w-input" placeholder="Modify capacity">
-        <input type="submit" class="submit-button w-button" value="Submit!">
+        <input [formControl]="maxCapacityInput" class="text-field" placeholder="Modify capacity">
+        <input type="submit" class="submit-button" value="Submit!">
       </form>
     </div>
-  </div>
-  <ul class="list w-list-unstyled">
-    <li class="list-item" *ngFor="let nr of plateNumbers">{{nr.nrInmatriculare}}</li>
-  </ul>
-</body>
+    <ul class="list">
+      <li class="list-item" *ngFor="let nr of plateNumbers">{{nr.nrInmatriculare}}</li>
+    </ul>
+</div>
