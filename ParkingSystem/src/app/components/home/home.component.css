@@ -1,10 +1,7 @@
 .background {
-  height: 100vh;
   background-image: url('src/assets/images/background.jpg');
-  height: auto;
   background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;
+  background-attachment: fixed;
 }
 
 .div-block {
