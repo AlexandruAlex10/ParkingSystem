@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AngularFireDatabase, AngularFireList } from "@angular/fire/compat/database";
-import { getDatabase, push, ref, set, onValue, update } from "firebase/database";
+import { getDatabase, push, ref, set, onValue, update, orderByChild, query, get, equalTo } from "firebase/database";
 import { plateNumberModel } from "../models/plateNumber.model";
 import { doc, deleteDoc } from "firebase/firestore";
 import { Firestore } from "@angular/fire/firestore";
@@ -36,13 +36,21 @@ export class InmatriculareService {
     return this.inmatriculare;
   }
 
-  post(numar: string | null) {
+  postNewPlateNumber(plateNumber: string | null) {
     const db = getDatabase();
     const postListRef = ref(db, this.dbPath);
-    const newPostRef = push(postListRef);
-    set(newPostRef, {
-      nrInmatriculare: numar,
-    });
+    const queryRef = query(postListRef, orderByChild('nrInmatriculare'), equalTo(plateNumber));
+    const existingRecords = get(queryRef).then((snapshot) => {
+      if (!snapshot.exists()) {
+        const newPostRef = push(postListRef);
+        set(newPostRef, {
+          nrInmatriculare: plateNumber,
+        });
+      }
+      else {
+        this.alertMessageDuplicateItem(plateNumber);
+      }
+    })
   }
 
   updateMaxCapacity(nr: string | null) {
@@ -57,5 +65,9 @@ export class InmatriculareService {
     const db = getDatabase();
     await deleteDoc(doc(<Firestore><unknown>db, this.dbPath, nr.value));
   }
+
+  public alertMessageDuplicateItem(plateNumber: string | null) {
+    alert("Operation aborted: plate number " + plateNumber + " already exists!");
+  }  
 
 }

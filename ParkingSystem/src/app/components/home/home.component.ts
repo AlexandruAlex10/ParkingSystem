@@ -55,7 +55,7 @@ export class HomeComponent implements OnInit {
           return;
         }
       }
-      this.inmatriculareService.post(this.plateNumberInput.value);
+      this.inmatriculareService.postNewPlateNumber(this.plateNumberInput.value);
       this.plateNumberInput.reset('');
     }
   }
