@@ -21,6 +21,9 @@ export class HomeComponent implements OnInit {
   public plateNumberInput = new FormControl('');
   public maxCapacityInput = new FormControl('');
 
+  public openBarrierButtonState: boolean = false;
+  public closeBarrierButtonState: boolean = false;
+
   constructor(protected inmatriculareService: InmatriculareService) {
   }
 
@@ -39,6 +42,64 @@ export class HomeComponent implements OnInit {
     this.inmatriculareService.getMaxCapacity().subscribe((maxCapacity) => {
       this.maxCapacity = maxCapacity;
     });
+
+    this.inmatriculareService.getOpenBarrierState().subscribe((openBarrierButtonState) => {
+      this.openBarrierButtonState = openBarrierButtonState;
+      this.changeColorForOpenBarrierButtonOnInit();
+    });
+
+    this.inmatriculareService.getCloseBarrierState().subscribe((closeBarrierButtonState) => {
+      this.closeBarrierButtonState = closeBarrierButtonState;
+      this.changeColorForCloseBarrierButtonOnInit();
+    });
+  }
+
+  public changeColorForOpenBarrierButtonOnInit() {
+    const openBarrierButton = document.getElementById('open-barrier-button') as HTMLButtonElement;
+    if (this.openBarrierButtonState == false) {
+      openBarrierButton.style.backgroundColor = "#CC4432";
+    } 
+    else {
+      openBarrierButton.style.backgroundColor = "#9BCC32";
+    }
+  }
+
+  public changeColorForCloseBarrierButtonOnInit() {
+    const closeBarrierButton = document.getElementById('close-barrier-button') as HTMLButtonElement;
+    if (this.closeBarrierButtonState == false) {
+      closeBarrierButton.style.backgroundColor = "#CC4432";
+    } 
+    else {
+      closeBarrierButton.style.backgroundColor = "#9BCC32";
+    }
+  }
+
+  public changeColorForOpenBarrierButton() {
+    const openBarrierButton = document.getElementById('open-barrier-button') as HTMLButtonElement;
+    if (this.openBarrierButtonState == false) {
+      this.openBarrierButtonState = true;
+      openBarrierButton.style.backgroundColor = "#9BCC32";
+      this.inmatriculareService.updateOpenBarrierIndefinitely(this.openBarrierButtonState);
+    } 
+    else {
+      this.openBarrierButtonState = false;
+      openBarrierButton.style.backgroundColor = "#CC4432";
+      this.inmatriculareService.updateOpenBarrierIndefinitely(this.openBarrierButtonState);
+    }
+  }
+
+  public changeColorForCloseBarrierButton() {
+    const closeBarrierButton = document.getElementById('close-barrier-button') as HTMLButtonElement;
+    if (this.closeBarrierButtonState == false) {
+      this.closeBarrierButtonState = true;
+      closeBarrierButton.style.backgroundColor = "#9BCC32";
+      this.inmatriculareService.updateCloseBarrierIndefinitely(this.closeBarrierButtonState);
+    } 
+    else {
+      this.closeBarrierButtonState = false;
+      closeBarrierButton.style.backgroundColor = "#CC4432";
+      this.inmatriculareService.updateCloseBarrierIndefinitely(this.closeBarrierButtonState);
+    }
   }
 
   public onSubmitPlateNumber() {

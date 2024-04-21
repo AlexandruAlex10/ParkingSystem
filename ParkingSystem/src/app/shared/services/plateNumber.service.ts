@@ -12,18 +12,22 @@ import { Observable } from 'rxjs';
 
 export class InmatriculareService {
 
-  private dbPath = '/nrInmatriculare';
-  private dbPathMax = '/nrLocuri'
+  private dbPathPlateNumbers = '/nrInmatriculare';
+  private dbPathMaxCapacity = '/nrLocuri'
+  private dbPathBarrierState = '/barrierState'
+
   inmatriculare: AngularFireList<plateNumberModel>;
   maxCapacity: number = 0;
+  openBarrierIndefinitely: boolean = false;
+  closeBarrierIndefinitely: boolean = false;
 
   constructor(private db: AngularFireDatabase) {
-    this.inmatriculare = db.list(this.dbPath);
+    this.inmatriculare = db.list(this.dbPathPlateNumbers);
   }
 
   getMaxCapacity(): Observable<number> {
     const db = getDatabase();
-    const starCountRef = ref(db, this.dbPathMax);
+    const starCountRef = ref(db, this.dbPathMaxCapacity);
     return new Observable<number>((observer) => {
       onValue(starCountRef, (snapshot) => {
         const data = snapshot.val();
@@ -38,7 +42,7 @@ export class InmatriculareService {
 
   postNewPlateNumber(plateNumber: string | null) {
     const db = getDatabase();
-    const postListRef = ref(db, this.dbPath);
+    const postListRef = ref(db, this.dbPathPlateNumbers);
     const queryRef = query(postListRef, orderByChild('nrInmatriculare'), equalTo(plateNumber));
     const existingRecords = get(queryRef).then((snapshot) => {
       if (!snapshot.exists()) {
@@ -55,19 +59,57 @@ export class InmatriculareService {
 
   updateMaxCapacity(nr: string | null) {
     const db = getDatabase();
-    const postListRef = ref(db, this.dbPathMax);
+    const postListRef = ref(db, this.dbPathMaxCapacity);
     const updates: Record<string, any> = {};
     updates['maxCapacity'] = nr;
     update(postListRef, updates);
   }
 
+  updateOpenBarrierIndefinitely(barrierState: boolean | null) {
+    const db = getDatabase();
+    const postListRef = ref(db, this.dbPathBarrierState);
+    const updates: Record<string, any> = {};
+    updates['openBarrierIndefinitely'] = barrierState;
+    update(postListRef, updates);
+  }
+
+  getOpenBarrierState(): Observable<boolean> {
+    const db = getDatabase();
+    const starCountRef = ref(db, this.dbPathBarrierState);
+    return new Observable<boolean>((observer) => {
+      onValue(starCountRef, (snapshot) => {
+        const data = snapshot.val();
+        observer.next(data.openBarrierIndefinitely);
+      });
+    });
+  }
+
+  updateCloseBarrierIndefinitely(barrierState: boolean | null) {
+    const db = getDatabase();
+    const postListRef = ref(db, this.dbPathBarrierState);
+    const updates: Record<string, any> = {};
+    updates['closeBarrierIndefinitely'] = barrierState;
+    update(postListRef, updates);
+  }
+
+  getCloseBarrierState(): Observable<boolean> {
+    const db = getDatabase();
+    const starCountRef = ref(db, this.dbPathBarrierState);
+    return new Observable<boolean>((observer) => {
+      onValue(starCountRef, (snapshot) => {
+        const data = snapshot.val();
+        observer.next(data.closeBarrierIndefinitely);
+      });
+    });
+  }
+
   async deleteNumarInmatriculare(nr: any) {
     const db = getDatabase();
-    await deleteDoc(doc(<Firestore><unknown>db, this.dbPath, nr.value));
+    await deleteDoc(doc(<Firestore><unknown>db, this.dbPathPlateNumbers, nr.value));
   }
 
   public alertMessageDuplicateItem(plateNumber: string | null) {
     alert("Operation aborted: plate number " + plateNumber + " already exists!");
-  }  
+  }
 
 }
