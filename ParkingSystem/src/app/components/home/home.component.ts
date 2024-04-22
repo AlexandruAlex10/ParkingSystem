@@ -14,7 +14,7 @@ export class HomeComponent implements OnInit {
 
   public plateNumbers: plateNumberModel[] = [];
   public filteredPlateNumbers: plateNumberModel[] = [];
-  
+
   public maxCapacity: number = 0;
   public searchText: string = '';
 
@@ -58,7 +58,7 @@ export class HomeComponent implements OnInit {
     const openBarrierButton = document.getElementById('open-barrier-button') as HTMLButtonElement;
     if (this.openBarrierButtonState == false) {
       openBarrierButton.style.backgroundColor = "#CC4432";
-    } 
+    }
     else {
       openBarrierButton.style.backgroundColor = "#9BCC32";
     }
@@ -68,7 +68,7 @@ export class HomeComponent implements OnInit {
     const closeBarrierButton = document.getElementById('close-barrier-button') as HTMLButtonElement;
     if (this.closeBarrierButtonState == false) {
       closeBarrierButton.style.backgroundColor = "#CC4432";
-    } 
+    }
     else {
       closeBarrierButton.style.backgroundColor = "#9BCC32";
     }
@@ -76,11 +76,17 @@ export class HomeComponent implements OnInit {
 
   public changeColorForOpenBarrierButton() {
     const openBarrierButton = document.getElementById('open-barrier-button') as HTMLButtonElement;
+    const closeBarrierButton = document.getElementById('close-barrier-button') as HTMLButtonElement;
     if (this.openBarrierButtonState == false) {
+      if (this.closeBarrierButtonState == true) {
+        this.closeBarrierButtonState = false;
+        closeBarrierButton.style.backgroundColor = "#CC4432";
+        this.inmatriculareService.updateCloseBarrierIndefinitely(this.closeBarrierButtonState);
+      }
       this.openBarrierButtonState = true;
       openBarrierButton.style.backgroundColor = "#9BCC32";
       this.inmatriculareService.updateOpenBarrierIndefinitely(this.openBarrierButtonState);
-    } 
+    }
     else {
       this.openBarrierButtonState = false;
       openBarrierButton.style.backgroundColor = "#CC4432";
@@ -89,12 +95,18 @@ export class HomeComponent implements OnInit {
   }
 
   public changeColorForCloseBarrierButton() {
+    const openBarrierButton = document.getElementById('open-barrier-button') as HTMLButtonElement;
     const closeBarrierButton = document.getElementById('close-barrier-button') as HTMLButtonElement;
     if (this.closeBarrierButtonState == false) {
+      if (this.openBarrierButtonState == true) {
+        this.openBarrierButtonState = false;
+        openBarrierButton.style.backgroundColor = "#CC4432";
+        this.inmatriculareService.updateOpenBarrierIndefinitely(this.openBarrierButtonState);
+      }
       this.closeBarrierButtonState = true;
       closeBarrierButton.style.backgroundColor = "#9BCC32";
       this.inmatriculareService.updateCloseBarrierIndefinitely(this.closeBarrierButtonState);
-    } 
+    }
     else {
       this.closeBarrierButtonState = false;
       closeBarrierButton.style.backgroundColor = "#CC4432";
