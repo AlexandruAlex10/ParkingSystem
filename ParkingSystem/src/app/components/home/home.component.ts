@@ -18,8 +18,9 @@ export class HomeComponent implements OnInit {
   public maxCapacity: number = 0;
   public searchText: string = '';
 
-  public plateNumberInput = new FormControl('');
+  public plateNumberToAddInput = new FormControl('');
   public maxCapacityInput = new FormControl('');
+  public plateNumberToDeleteInput = new FormControl('');
 
   public openBarrierButtonState: boolean = false;
   public closeBarrierButtonState: boolean = false;
@@ -115,21 +116,21 @@ export class HomeComponent implements OnInit {
   }
 
   public onSubmitPlateNumber() {
-    if (this.plateNumberInput.value == '') {
+    if (this.plateNumberToAddInput.value == '') {
       this.alertMessageEmpty();
       return;
     }
     else {
-      if (this.plateNumberInput.value != null) {
+      if (this.plateNumberToAddInput.value != null) {
         const regexPlateNumber = /^(((AB|AG|AR|BC|BH|BN|BR|BT|BV|BZ|CJ|CL|CS|CT|CV|DB|DJ|GJ|GL|GR|HD|HR|IF|IL|IS|MH|MM|MS|NT|OT|PH|SB|SJ|SM|SV|TL|TM|TR|VL|VN|VS) (0[1-9]|[1-9][0-9]))|(B (0[1-9]|[1-9][0-9]{1,2}))) ([A-HJ-NPR-Z][A-PR-Z]{2})$/;
-        const isMatch = regexPlateNumber.test(this.plateNumberInput.value);
+        const isMatch = regexPlateNumber.test(this.plateNumberToAddInput.value);
         if (!isMatch) {
           this.alertMessageInvalidPlateNumber();
           return;
         }
       }
-      this.inmatriculareService.postNewPlateNumber(this.plateNumberInput.value);
-      this.plateNumberInput.reset('');
+      this.inmatriculareService.postNewPlateNumber(this.plateNumberToAddInput.value);
+      this.plateNumberToAddInput.reset('');
     }
   }
 
@@ -162,8 +163,19 @@ export class HomeComponent implements OnInit {
     );
   }
 
-  deletePlateNumber(nr: any) {
-    this.inmatriculareService.deleteNumarInmatriculare(nr);
+  onDeletePlateNumber() {
+    if (this.plateNumberToDeleteInput.value == '') {
+      this.alertMessageEmpty();
+      return;
+    }
+    else {
+      if (this.plateNumberToDeleteInput.value != null) {
+        if (confirm("Are you sure you want to delete plate number " + this.plateNumberToDeleteInput.value + "?")) {
+          this.inmatriculareService.deletePlateNumber(this.plateNumberToDeleteInput.value);
+          this.plateNumberToDeleteInput.reset('');
+        }
+      }
+    }
   }
 
   public alertMessageEmpty() {
