@@ -25,19 +25,43 @@ def analyse_image(IMAGE_PATH):
         for r in results['results'][0]['candidates']:
             returned[0].append(r['plate'])
     
-    #check image online, on OpenALPR API
-    with open(IMAGE_PATH, 'rb') as image_file:
-        r = requests.post('https://api.platerecognizer.com/v1/plate-reader/', data=dict(regions=["ro"]), files=dict(upload=image_file), headers={'Authorization': 'Token beea50c9352e241e68054caa814076159fe05be3'})
-        if len(r.json()['results']):
-            i = 0
-            for r in r.json()['results'][0]['candidates']:
-                i = i + 1
-                if i > 3:
-                    break
-                returned[1].append(r['plate'])
+        #check image online, on OpenALPR API
+        with open(IMAGE_PATH, 'rb') as image_file:
+            r = requests.post('https://api.platerecognizer.com/v1/plate-reader/', data=dict(regions=["ro"]), files=dict(upload=image_file), headers={'Authorization': 'Token beea50c9352e241e68054caa814076159fe05be3'})
+            if len(r.json()['results']):
+                i = 0
+                for r in r.json()['results'][0]['candidates']:
+                    i = i + 1
+                    if i > 3:
+                        break
+                    returned[1].append(format_plate_number(r['plate']))
     
     #return result
     return returned
+
+#function that formats the plates by capitalizing the letters and adding necessary spaces
+def format_plate_number(plate_number):
+    formatted_plate = ""
+    i = 0
+    
+    while i < len(plate_number):
+        #check if current index is a letter
+        if plate_number[i].isalpha():
+            formatted_plate = formatted_plate + plate_number[i]
+            #check if next index is a number
+            if i + 1 < len(plate_number) and plate_number[i + 1].isdigit():
+                formatted_plate = formatted_plate + " "
+        #check if current index is a number
+        elif plate_number[i].isdigit():
+            formatted_plate = formatted_plate + plate_number[i]
+            #check if next index is a letter
+            if i + 1 < len(plate_number) and plate_number[i + 1].isalpha():
+                formatted_plate = formatted_plate + " "
+        i = i + 1
+    
+    formatted_plate = formatted_plate.upper()
+    
+    return formatted_plate
 
 #save image function
 def take_image(IMAGE_PATH):
@@ -132,7 +156,7 @@ def check_server(result, cars):
     
     locuri = []
     for key, value in locuriDict.items():
-        locuri.append(value['maxCapacity'])
+        locuri.append(value)
     
     locuri = int(locuri[-1])
     
