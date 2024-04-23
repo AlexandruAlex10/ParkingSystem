@@ -15,6 +15,7 @@ export class HomeComponent implements OnInit {
   public plateNumbers: plateNumberModel[] = [];
   public filteredPlateNumbers: plateNumberModel[] = [];
 
+  public currentCapacity: number = 0;
   public maxCapacity: number = 0;
   public searchText: string = '';
 
@@ -40,8 +41,14 @@ export class HomeComponent implements OnInit {
       this.filteredPlateNumbers = data;
     });
 
+    this.inmatriculareService.getCurrentCapacity().subscribe((currentCapacity) => {
+      this.currentCapacity = currentCapacity;
+      this.chooseColorForCapacitySpan();
+    });
+
     this.inmatriculareService.getMaxCapacity().subscribe((maxCapacity) => {
       this.maxCapacity = maxCapacity;
+      this.chooseColorForCapacitySpan();
     });
 
     this.inmatriculareService.getOpenBarrierState().subscribe((openBarrierButtonState) => {
@@ -53,6 +60,7 @@ export class HomeComponent implements OnInit {
       this.closeBarrierButtonState = closeBarrierButtonState;
       this.changeColorForCloseBarrierButtonOnInit();
     });
+
   }
 
   public changeColorForOpenBarrierButtonOnInit() {
@@ -112,6 +120,19 @@ export class HomeComponent implements OnInit {
       this.closeBarrierButtonState = false;
       closeBarrierButton.style.backgroundColor = "#CC4432";
       this.inmatriculareService.updateCloseBarrierIndefinitely(this.closeBarrierButtonState);
+    }
+  }
+
+  public chooseColorForCapacitySpan() {
+    const capacitySpan = document.getElementById('capacity-span') as HTMLSpanElement;
+    if ((this.currentCapacity == 0 && this.maxCapacity == 0) || this.currentCapacity / this.maxCapacity < 0.5) {
+      capacitySpan.style.color = "#9BCC32";
+    }
+    else if (this.currentCapacity / this.maxCapacity >= 1) {
+      capacitySpan.style.color = "#CC4432";
+    }
+    else {
+      capacitySpan.style.color = "#FFC800";
     }
   }
 

@@ -13,8 +13,8 @@ module.exports = {
       c1: '#FFFFFF',
       c2: '#000000',
       c3: '#32B4CC',
-      c4: '#C9CC32',
-      c5: '#9BCC32',
+      c4: '#9BCC32',
+      c5: '#FFC800',
       c6: '#CC4432',
       c7: '#1E1E1E',
     }

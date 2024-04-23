@@ -13,7 +13,7 @@
   </div>
   <div class="div-block">
     <h3 class="heading-3">Parking lot capacity:
-      <span style="color: #9BCC32">-/{{maxCapacity}}</span>
+      <span id="capacity-span">{{currentCapacity}}/{{maxCapacity}}</span>
     </h3>
     <form (submit)="onSubmitMaxCapacity()" class="form">
       <input [formControl]="maxCapacityInput" class="text-field" placeholder="Modify capacity..."
@@ -34,8 +34,8 @@
   <div class="div-block">
     <h3 class="heading-3">Delete registered plate number</h3>
     <form (submit)="onDeletePlateNumber()" class="form">
-      <input [formControl]="plateNumberToDeleteInput" class="text-field" placeholder="Delete plate number..." onfocus="this.placeholder = ''"
-        onblur="this.placeholder = 'Delete plate number...'">
+      <input [formControl]="plateNumberToDeleteInput" class="text-field" placeholder="Delete plate number..."
+        onfocus="this.placeholder = ''" onblur="this.placeholder = 'Delete plate number...'">
       <input type="submit" class="submit-button" value="Submit">
     </form>
   </div>

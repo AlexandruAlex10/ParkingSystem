@@ -11,16 +11,29 @@ import { Observable } from 'rxjs';
 export class InmatriculareService {
 
   private dbPathPlateNumbers = '/nrInmatriculare';
+  private dbPathCurrentCapacity = '/nrLocuriOcupate';
   private dbPathMaxCapacity = '/nrLocuri';
   private dbPathBarrierState = '/stareBariera';
 
   inmatriculare: AngularFireList<plateNumberModel>;
+  currentCapacity: number = 0;
   maxCapacity: number = 0;
   openBarrierIndefinitely: boolean = false;
   closeBarrierIndefinitely: boolean = false;
 
   constructor(private db: AngularFireDatabase) {
     this.inmatriculare = db.list(this.dbPathPlateNumbers);
+  }
+
+  getCurrentCapacity(): Observable<number> {
+    const db = getDatabase();
+    const getCounterRef = ref(db, this.dbPathCurrentCapacity);
+    return new Observable<number>((observer) => {
+      onValue(getCounterRef, (snapshot) => {
+        const data = snapshot.val();
+        observer.next(data.currentCapacity);
+      });
+    });
   }
 
   getMaxCapacity(): Observable<number> {
