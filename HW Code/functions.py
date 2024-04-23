@@ -137,9 +137,18 @@ def print_results(result):
         print(a)
     print("")
 
+#function that updates how many cars are currently in the parking lot
+def update_current_capacity(cars):
+    #connect to the database
+    authentication = firebase.FirebaseAuthentication('AIzaSyCKkmz83BU8kFzRwUc6I9Bh0-st8lVkcac', 'alexandru.mitrofan10@gmail.com', extra={'id': 'chs-system-de-parcare'})
+    f = firebase.FirebaseApplication('https://chs-system-de-parcare-default-rtdb.europe-west1.firebasedatabase.app/', authentication=authentication)
+
+    #update parameter from database
+    f.put('/nrLocuriOcupate', 'currentCapacity' ,cars)
+
 #function that checks if the plate number is authorized
 def check_server(result, cars):
-    #datele de conectare la baza de date
+    #connect to the database
     authentication = firebase.FirebaseAuthentication('AIzaSyCKkmz83BU8kFzRwUc6I9Bh0-st8lVkcac', 'alexandru.mitrofan10@gmail.com', extra={'id': 'chs-system-de-parcare'})
     f = firebase.FirebaseApplication('https://chs-system-de-parcare-default-rtdb.europe-west1.firebasedatabase.app/', authentication=authentication)
     

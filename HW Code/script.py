@@ -5,6 +5,7 @@ from time import sleep
 #initialize pins
 setup_pins()
 cars = 0
+update_current_capacity(cars)
 last_image = 0
 
 #run infinite loop
@@ -47,6 +48,9 @@ while True:
             #close barrier
             turn_servo(0)
 
+            #update number of cars in the parking lot
+            update_current_capacity(cars)
+
         else:  # turn on led if not autorized
             turn_led(True)
             sleep(2)
@@ -63,9 +67,12 @@ while True:
         while check_distance() == 1:
             sleep(0.1)
 
-        sleep(3)
+        sleep(4)
 
         #close barrier
         turn_servo(0)
+
+        #update number of cars in the parking lot
+        update_current_capacity(cars)
 
     sleep(0.001)
