@@ -13,7 +13,8 @@ export class InmatriculareService {
   private dbPathPlateNumbers = '/nrInmatriculare';
   private dbPathCurrentCapacity = '/nrLocuriOcupate';
   private dbPathMaxCapacity = '/nrLocuri';
-  private dbPathBarrierState = '/stareBariera';
+  private dbPathBarrierStateOpen = '/stareBarieraDeschisa';
+  private dbPathBarrierStateClosed = '/stareBarieraInchisa';
 
   inmatriculare: AngularFireList<plateNumberModel>;
   currentCapacity: number = 0;
@@ -78,7 +79,7 @@ export class InmatriculareService {
 
   updateOpenBarrierIndefinitely(barrierState: boolean | null) {
     const db = getDatabase();
-    const updateFlagRef = ref(db, this.dbPathBarrierState);
+    const updateFlagRef = ref(db, this.dbPathBarrierStateOpen);
     const updates: Record<string, any> = {};
     updates['openBarrierIndefinitely'] = barrierState;
     update(updateFlagRef, updates);
@@ -86,7 +87,7 @@ export class InmatriculareService {
 
   getOpenBarrierState(): Observable<boolean> {
     const db = getDatabase();
-    const getFlagRef = ref(db, this.dbPathBarrierState);
+    const getFlagRef = ref(db, this.dbPathBarrierStateOpen);
     return new Observable<boolean>((observer) => {
       onValue(getFlagRef, (snapshot) => {
         const data = snapshot.val();
@@ -97,7 +98,7 @@ export class InmatriculareService {
 
   updateCloseBarrierIndefinitely(barrierState: boolean | null) {
     const db = getDatabase();
-    const updateFlagRef = ref(db, this.dbPathBarrierState);
+    const updateFlagRef = ref(db, this.dbPathBarrierStateClosed);
     const updates: Record<string, any> = {};
     updates['closeBarrierIndefinitely'] = barrierState;
     update(updateFlagRef, updates);
@@ -105,7 +106,7 @@ export class InmatriculareService {
 
   getCloseBarrierState(): Observable<boolean> {
     const db = getDatabase();
-    const getFlagRef = ref(db, this.dbPathBarrierState);
+    const getFlagRef = ref(db, this.dbPathBarrierStateClosed);
     return new Observable<boolean>((observer) => {
       onValue(getFlagRef, (snapshot) => {
         const data = snapshot.val();

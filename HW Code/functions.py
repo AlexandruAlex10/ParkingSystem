@@ -102,10 +102,14 @@ def turn_servo(state):
     GPIO.output(14, True)
     if state:
         pwm.ChangeDutyCycle(9.6)
-        print("Barier open")
+        print("")
+        print("Barier is now open")
+        print("")
     else:
         pwm.ChangeDutyCycle(4.5)
-        print("Barier closed")
+        print("")
+        print("Barier is now closed")
+        print("")
     sleep(2)
     pwm.ChangeDutyCycle(0)
     GPIO.output(14, False)
@@ -124,13 +128,14 @@ def turn_led(state):
 
 #function that prints in console the gathered results from local program/API
 def print_results(result):
-    print("offline results")
+    print("")
+    print("Offline results:")
     if len(result[0]) == 0:
         print("none")
     for a in result[0]:
         print(a)
     
-    print("online results")
+    print("Online results:")
     if len(result[1]) == 0:
         print("none")
     for a in result[1]:
@@ -144,7 +149,7 @@ def update_current_capacity(cars):
     f = firebase.FirebaseApplication('https://chs-system-de-parcare-default-rtdb.europe-west1.firebasedatabase.app/', authentication=authentication)
 
     #update parameter from database
-    f.put('/nrLocuriOcupate', 'currentCapacity' ,cars)
+    f.put('/nrLocuriOcupate', 'currentCapacity' , str(cars))
 
 #function that checks if the plate number is authorized
 def check_server(result, cars):
@@ -158,7 +163,7 @@ def check_server(result, cars):
     #gather parking lot max capacity
     locuriDict = f.get('/nrLocuri', None)
     
-    #convert from dictionary into list
+    #convert from dictionary into list/number
     numere = []
     for key, value in numereDict.items():
         numere.append(value['nrInmatriculare'])
@@ -184,3 +189,92 @@ def check_server(result, cars):
                 return True
     
     return False
+
+#function leaves barrier open or closed indefinitely
+def open_or_close_barrier_indefinitely():
+    #connect to the database
+    authentication = firebase.FirebaseAuthentication('AIzaSyCKkmz83BU8kFzRwUc6I9Bh0-st8lVkcac', 'alexandru.mitrofan10@gmail.com', extra={'id': 'chs-system-de-parcare'})
+    f = firebase.FirebaseApplication('https://chs-system-de-parcare-default-rtdb.europe-west1.firebasedatabase.app/', authentication=authentication)
+
+    stareBarieraDeschisaDict = f.get('/stareBarieraDeschisa', None)
+    stareBarieraInchisaDict = f.get('/stareBarieraInchisa', None)
+
+    stareBarieraDeschisa = []
+    for key, value in stareBarieraDeschisaDict.items():
+        stareBarieraDeschisa.append(value)
+        
+    deschideBariera = bool(stareBarieraDeschisa[-1])
+    
+    stareBarieraInchisa = []
+    for key, value in stareBarieraInchisaDict.items():
+        stareBarieraInchisa.append(value)
+    
+    inchideBariera = bool(stareBarieraInchisa[-1])
+
+    if inchideBariera == True:
+        
+        print ("Preparing for 'barrier closed indefinitely' state...")
+        
+        #wait until car leaves
+        while check_distance() == 1:
+            sleep(0.1)
+        
+        sleep(4)
+
+        #close barrier
+        turn_servo(0)
+
+        #turn on led indefinitely
+        turn_led(True)
+
+        print ("Barrier closed indefinitely by admin!")
+
+        #recheck database for a change of state every 30 seconds
+        while inchideBariera == True:
+            
+            stareBarieraInchisaDict = f.get('/stareBarieraInchisa', None)
+
+            stareBarieraInchisa = []
+            for key, value in stareBarieraInchisaDict.items():
+                stareBarieraInchisa.append(value)
+    
+            inchideBariera = bool(stareBarieraInchisa[-1])
+            
+            sleep(30)
+
+        #turn off led
+        turn_led(False)
+        
+        print ("System recovery successful from 'barrier closed indefinitely' state!")
+        
+    if deschideBariera == True:
+
+        #open barrier
+        turn_servo(1)
+
+        print ("Barrier opened indefinitely by admin!")
+
+        #recheck database for a change of state every 30 seconds
+        while deschideBariera == True:
+            
+            stareBarieraDeschisaDict = f.get('/stareBarieraDeschisa', None)
+
+            stareBarieraDeschisa = []
+            for key, value in stareBarieraDeschisaDict.items():
+                stareBarieraDeschisa.append(value)
+        
+            deschideBariera = bool(stareBarieraDeschisa[-1])
+
+            sleep(30)
+        
+        print ("System is recovering back to normal from 'barrier opened indefinitely' state...")
+        
+        #wait until car leaves
+        while check_distance() == 1:
+            sleep(0.1)
+        
+        sleep(4)
+    
+        #close barrier
+        turn_servo(0)
+        print ("System recovery successful from 'barrier opened indefinitely' state!")

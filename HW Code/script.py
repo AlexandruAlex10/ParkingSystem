@@ -10,6 +10,10 @@ last_image = 0
 
 #run infinite loop
 while True:
+    
+    #check if there is a need to close or open the barrier indefinitely
+    open_or_close_barrier_indefinitely()
+    
     last_image += 1
 
     #take a picture every second
@@ -74,5 +78,5 @@ while True:
 
         #update number of cars in the parking lot
         update_current_capacity(cars)
-
+    
     sleep(0.001)
