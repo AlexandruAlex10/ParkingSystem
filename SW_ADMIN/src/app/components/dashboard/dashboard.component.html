@@ -5,7 +5,7 @@
     <div class="mt-4 flex flex-col justify-center items-center" *ngIf="authService.userData as user">
       <img class="h-24 w-24 rounded-full mb-2"
         src="{{(user.photoURL) ? user.photoURL : '/assets/images/dummy-user.png'}}" alt="{{user.displayName}}">
-      <div class="mb-2">Hello: <strong>{{(user.displayName) ? user.displayName : 'UserModel'}}</strong></div>
+      <div class="mb-2">Hello: <strong>{{(user.displayName) ? user.displayName : 'User'}}</strong></div>
       <div class="mb-2">UserModel ID: <strong>{{user.uid}}</strong></div>
       <div class="mb-2">Email: <strong>{{user.email}}</strong></div>
       <div class="mb-2">Email Verified: <strong>{{user.emailVerified}}</strong></div>
