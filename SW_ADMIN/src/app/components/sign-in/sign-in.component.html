@@ -11,26 +11,13 @@
       </app-fieldset-input>
     </div>
     <button class="bg-c6 w-full py-1" (click)="authService.SignIn(userName.value, userPassword.value)">Log in</button>
-    <div class="flex items-center justify-center w-full mt-4">
-      <div class="h-[1px] w-2/5 bg-c1"></div>
-      <div class="w-1/5">OR</div>
-      <div class="h-[1px] w-2/5 bg-c1"></div>
-    </div>
-    <button type="button" class="flex items-center justify-center gap-2 w-full my-4" (click)="authService.GoogleAuth()">
-      <svg class="h-8 w-8 text-c6" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
-        fill="none" stroke-linecap="round" stroke-linejoin="round">
-        <path stroke="none" d="M0 0h24v24H0z" />
-        <path d="M17.788 5.108A9 9 0 1021 12h-8" />
-      </svg>
-      Log in with Google
-    </button>
-    <button routerLink="/forgot-password">Forgot Password?</button>
     <div class="flex gap-2 mt-2">
-      <!-- Uncomment the following two lines of code to enable Sign Ups and comment to disable Sign Ups -->
+      <div>Forgot Your Password?</div>
+      <button class="text-c6" routerLink="/forgot-password"> Click Me</button>
+    </div>
+    <div class="flex gap-2 mt-2">
       <div>Don't have an account?</div>
       <button class="text-c4" routerLink="/sign-up"> Sign Up</button>
-      <!-- Comment the following line of code to enable Sign Ups and uncomment to disable Sign Ups -->
-      <!-- <div>Sign Ups are not available right now, please try again later!</div> -->
     </div>
   </div>
 </div>
