@@ -2,8 +2,9 @@ import { Injectable, NgZone } from '@angular/core';
 import { UserModel } from '../models/user.model';
 import * as auth from 'firebase/auth';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
-import { AngularFirestore, AngularFirestoreDocument } from '@angular/fire/compat/firestore';
+import { AngularFirestore, AngularFirestoreDocument, DocumentSnapshot } from '@angular/fire/compat/firestore';
 import { Router } from '@angular/router';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -23,7 +24,7 @@ export class AuthService {
         localStorage.setItem('user', JSON.stringify(this.userData));
         JSON.parse(localStorage.getItem('user')!);
         if (user.emailVerified) {
-          this.updateEmailVerificationStatus(user.uid);
+          this.updateEmailVerificationStatusInDatabase(user.uid);
         }
       } else {
         localStorage.setItem('user', 'null');
@@ -37,13 +38,8 @@ export class AuthService {
       .signInWithEmailAndPassword(email, password)
       .then(() => {
         this.afAuth.authState.subscribe((user) => {
-          if (user != null) {
-            if (!user.emailVerified) {
-              window.alert("Please verify your account (click on the mail we have sent to you)\nIf done, please reload the page")
-            }
-          }
           if (user) {
-            this.router.navigate(['dashboard']);
+            this.checkUserExistsInDatabase(user.uid);
           }
         });
       })
@@ -56,7 +52,8 @@ export class AuthService {
     return this.afAuth
       .createUserWithEmailAndPassword(email, password)
       .then((result) => {
-        this.SetUserData(result.user);
+        this.SetUserDataAdminInDatabase(result.user);
+        this.SetUserDataClientInDatabase(result.user);
         this.SendVerificationMail();
       })
       .catch((error) => {
@@ -70,11 +67,6 @@ export class AuthService {
       .then(() => {
         this.router.navigate(['verify-email']);
       });
-  }
-
-  updateEmailVerificationStatus(uid: string) {
-    const userRef: AngularFirestoreDocument<any> = this.afs.doc(`admin/${uid}`);
-    userRef.set({ emailVerified: true }, { merge: true })
   }
 
   ForgotPassword(passwordResetEmail: string) {
@@ -93,7 +85,48 @@ export class AuthService {
     return user !== null && user.emailVerified !== false ? true : false;
   }
 
-  SetUserData(user: any) {
+  SignOut() {
+    return this.afAuth.signOut().then(() => {
+      localStorage.removeItem('user');
+      this.router.navigate(['sign-in']);
+    });
+  }
+
+  updateEmailVerificationStatusInDatabase(uid: string) {
+    this.afs.collection('admin').doc(uid).get().subscribe(doc => {
+      if (doc.exists) {
+        this.afs.collection('admin').doc(uid).update({ emailVerified: true })
+      }
+    });
+  }
+
+  checkUserExistsInDatabase(uid: string) {
+    this.afs.collection('admin').doc(uid).get().subscribe(doc => {
+      if (!doc.exists) {
+        this.alertMessageUnauthorizedUser();
+      } else {
+        this.checkEmailVerifiedInDatabase(uid)
+      }
+    });
+  }
+
+  checkEmailVerifiedInDatabase(uid: string) {
+    this.afs.collection('admin').doc<any>(uid).get().subscribe((doc: DocumentSnapshot<any>) => {
+      if (doc.exists) {
+        const data = doc.data() as { emailVerified: boolean };
+        const emailVerified = data.emailVerified;
+        if (emailVerified) {
+          this.router.navigate(['dashboard']);
+        } else {
+          this.alertMessageUnauthorizedUser();
+        }
+      } else {
+        this.alertMessageUnauthorizedUser();
+      }
+    });
+  }  
+
+  SetUserDataAdminInDatabase(user: any) {
     const userRef: AngularFirestoreDocument<any> = this.afs.doc(
       `admin/${user.uid}`
     );
@@ -108,10 +141,20 @@ export class AuthService {
     });
   }
 
-  SignOut() {
-    return this.afAuth.signOut().then(() => {
-      localStorage.removeItem('user');
-      this.router.navigate(['sign-in']);
+  SetUserDataClientInDatabase(user: any) {
+    const userRef: AngularFirestoreDocument<any> = this.afs.doc(
+      `client/${user.uid}`
+    );
+    const userData: UserModel = {
+      uid: user.uid,
+      email: user.email,
+    };
+    return userRef.set(userData, {
+      merge: true,
     });
+  }
+
+  public alertMessageUnauthorizedUser() {
+    window.alert("Please wait until an admin activates your account.")
   }
 }
