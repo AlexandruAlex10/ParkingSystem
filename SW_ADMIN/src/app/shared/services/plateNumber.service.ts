@@ -8,22 +8,22 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 
-export class InmatriculareService {
+export class PlateNumberService {
 
-  private dbPathPlateNumbers = '/nrInmatriculare';
-  private dbPathCurrentCapacity = '/nrLocuriOcupate';
-  private dbPathMaxCapacity = '/nrLocuri';
-  private dbPathBarrierStateOpen = '/stareBarieraDeschisa';
-  private dbPathBarrierStateClosed = '/stareBarieraInchisa';
+  private dbPathPlateNumbers = '/plateNumbers';
+  private dbPathCurrentCapacity = '/currentCapacity';
+  private dbPathMaxCapacity = '/maxCapacity';
+  private dbPathBarrierStateOpen = '/openBarrierIndefinitely';
+  private dbPathBarrierStateClosed = '/closeBarrierIndefinitely';
 
-  inmatriculare: AngularFireList<plateNumberModel>;
+  plateNumbers: AngularFireList<plateNumberModel>;
   currentCapacity: number = 0;
   maxCapacity: number = 0;
   openBarrierIndefinitely: boolean = false;
   closeBarrierIndefinitely: boolean = false;
 
   constructor(private db: AngularFireDatabase) {
-    this.inmatriculare = db.list(this.dbPathPlateNumbers);
+    this.plateNumbers = db.list(this.dbPathPlateNumbers);
   }
 
   getCurrentCapacity(): Observable<number> {
@@ -49,18 +49,19 @@ export class InmatriculareService {
   }
 
   getAllPlateNumbers(): AngularFireList<plateNumberModel> {
-    return this.inmatriculare;
+    return this.plateNumbers;
   }
 
-  postNewPlateNumber(plateNumber: string | null) {
+  postNewPlateNumber(plateNumber: string | null, isPermanent: boolean) {
     const db = getDatabase();
     const postListRef = ref(db, this.dbPathPlateNumbers);
-    const queryRef = query(postListRef, orderByChild('nrInmatriculare'), equalTo(plateNumber));
+    const queryRef = query(postListRef, orderByChild('plateNumbers'), equalTo(plateNumber));
     get(queryRef).then((snapshot) => {
       if (!snapshot.exists()) {
         const newPostRef = push(postListRef);
         set(newPostRef, {
-          nrInmatriculare: plateNumber,
+          plateNumber: plateNumber,
+          isPermanent: isPermanent,
         });
       }
       else {
@@ -118,7 +119,7 @@ export class InmatriculareService {
   deletePlateNumber(plateNumber: string) {
     const db = getDatabase();
     const deleteListRef = ref(db, this.dbPathPlateNumbers);
-    const queryRef = query(deleteListRef, orderByChild('nrInmatriculare'), equalTo(plateNumber));
+    const queryRef = query(deleteListRef, orderByChild('plateNumber'), equalTo(plateNumber));
     get(queryRef).then((snapshot) => {
       if (snapshot.exists()) {
         const key = Object.keys(snapshot.val())[0];

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl } from "@angular/forms";
 import { map } from "rxjs";
-import { InmatriculareService } from "../../shared/services/plateNumber.service";
+import { PlateNumberService } from "../../shared/services/plateNumber.service";
 import { plateNumberModel } from "../../shared/models/plateNumber.model";
 
 @Component({
@@ -26,11 +26,11 @@ export class HomeComponent implements OnInit {
   public openBarrierButtonState: boolean = false;
   public closeBarrierButtonState: boolean = false;
 
-  constructor(protected inmatriculareService: InmatriculareService) {
+  constructor(protected plateNumberService: PlateNumberService) {
   }
 
   ngOnInit() {
-    this.inmatriculareService.getAllPlateNumbers()!.snapshotChanges().pipe(
+    this.plateNumberService.getAllPlateNumbers()!.snapshotChanges().pipe(
       map(changes =>
         changes.map(c =>
           ({ key: c.payload.key, ...c.payload.val() })
@@ -41,22 +41,22 @@ export class HomeComponent implements OnInit {
       this.filteredPlateNumbers = data;
     });
 
-    this.inmatriculareService.getCurrentCapacity().subscribe((currentCapacity) => {
+    this.plateNumberService.getCurrentCapacity().subscribe((currentCapacity) => {
       this.currentCapacity = currentCapacity;
       this.chooseColorForCapacitySpan();
     });
 
-    this.inmatriculareService.getMaxCapacity().subscribe((maxCapacity) => {
+    this.plateNumberService.getMaxCapacity().subscribe((maxCapacity) => {
       this.maxCapacity = maxCapacity;
       this.chooseColorForCapacitySpan();
     });
 
-    this.inmatriculareService.getOpenBarrierState().subscribe((openBarrierButtonState) => {
+    this.plateNumberService.getOpenBarrierState().subscribe((openBarrierButtonState) => {
       this.openBarrierButtonState = openBarrierButtonState;
       this.changeColorForOpenBarrierButtonOnInit();
     });
 
-    this.inmatriculareService.getCloseBarrierState().subscribe((closeBarrierButtonState) => {
+    this.plateNumberService.getCloseBarrierState().subscribe((closeBarrierButtonState) => {
       this.closeBarrierButtonState = closeBarrierButtonState;
       this.changeColorForCloseBarrierButtonOnInit();
     });
@@ -90,16 +90,16 @@ export class HomeComponent implements OnInit {
       if (this.closeBarrierButtonState == true) {
         this.closeBarrierButtonState = false;
         closeBarrierButton.style.backgroundColor = "#CC4432";
-        this.inmatriculareService.updateCloseBarrierIndefinitely(this.closeBarrierButtonState);
+        this.plateNumberService.updateCloseBarrierIndefinitely(this.closeBarrierButtonState);
       }
       this.openBarrierButtonState = true;
       openBarrierButton.style.backgroundColor = "#9BCC32";
-      this.inmatriculareService.updateOpenBarrierIndefinitely(this.openBarrierButtonState);
+      this.plateNumberService.updateOpenBarrierIndefinitely(this.openBarrierButtonState);
     }
     else {
       this.openBarrierButtonState = false;
       openBarrierButton.style.backgroundColor = "#CC4432";
-      this.inmatriculareService.updateOpenBarrierIndefinitely(this.openBarrierButtonState);
+      this.plateNumberService.updateOpenBarrierIndefinitely(this.openBarrierButtonState);
     }
   }
 
@@ -110,16 +110,16 @@ export class HomeComponent implements OnInit {
       if (this.openBarrierButtonState == true) {
         this.openBarrierButtonState = false;
         openBarrierButton.style.backgroundColor = "#CC4432";
-        this.inmatriculareService.updateOpenBarrierIndefinitely(this.openBarrierButtonState);
+        this.plateNumberService.updateOpenBarrierIndefinitely(this.openBarrierButtonState);
       }
       this.closeBarrierButtonState = true;
       closeBarrierButton.style.backgroundColor = "#9BCC32";
-      this.inmatriculareService.updateCloseBarrierIndefinitely(this.closeBarrierButtonState);
+      this.plateNumberService.updateCloseBarrierIndefinitely(this.closeBarrierButtonState);
     }
     else {
       this.closeBarrierButtonState = false;
       closeBarrierButton.style.backgroundColor = "#CC4432";
-      this.inmatriculareService.updateCloseBarrierIndefinitely(this.closeBarrierButtonState);
+      this.plateNumberService.updateCloseBarrierIndefinitely(this.closeBarrierButtonState);
     }
   }
 
@@ -150,7 +150,7 @@ export class HomeComponent implements OnInit {
           return;
         }
       }
-      this.inmatriculareService.postNewPlateNumber(this.plateNumberToAddInput.value);
+      this.plateNumberService.postNewPlateNumber(this.plateNumberToAddInput.value, true);
       this.plateNumberToAddInput.reset('');
     }
   }
@@ -169,7 +169,7 @@ export class HomeComponent implements OnInit {
           return;
         }
       }
-      this.inmatriculareService.updateMaxCapacity(this.maxCapacityInput.value);
+      this.plateNumberService.updateMaxCapacity(this.maxCapacityInput.value);
       this.maxCapacityInput.reset('');
     }
   }
@@ -180,7 +180,7 @@ export class HomeComponent implements OnInit {
       return;
     }
     this.filteredPlateNumbers = this.plateNumbers.filter(
-      plateNumbers => plateNumbers?.nrInmatriculare?.toLowerCase().includes(text.toLowerCase())
+      plateNumbers => plateNumbers?.plateNumber?.toLowerCase().includes(text.toLowerCase())
     );
   }
 
@@ -192,7 +192,7 @@ export class HomeComponent implements OnInit {
     else {
       if (this.plateNumberToDeleteInput.value != null) {
         if (confirm("Are you sure you want to delete plate number " + this.plateNumberToDeleteInput.value + "?")) {
-          this.inmatriculareService.deletePlateNumber(this.plateNumberToDeleteInput.value);
+          this.plateNumberService.deletePlateNumber(this.plateNumberToDeleteInput.value);
           this.plateNumberToDeleteInput.reset('');
         }
       }

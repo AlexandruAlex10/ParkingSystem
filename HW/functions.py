@@ -149,7 +149,7 @@ def update_current_capacity(cars):
     f = firebase.FirebaseApplication('https://chs-system-de-parcare-default-rtdb.europe-west1.firebasedatabase.app/', authentication=authentication)
 
     #update parameter from database
-    f.put('/nrLocuriOcupate', 'currentCapacity' , str(cars))
+    f.put('/currentCapacity', 'currentCapacity' , str(cars))
 
 #function that checks if the plate number is authorized
 def check_server(result, cars):
@@ -158,15 +158,15 @@ def check_server(result, cars):
     f = firebase.FirebaseApplication('https://chs-system-de-parcare-default-rtdb.europe-west1.firebasedatabase.app/', authentication=authentication)
     
     #gather authorized plate numbers
-    numereDict = f.get('/nrInmatriculare', None)
+    numereDict = f.get('/plateNumbers', None)
     
     #gather parking lot max capacity
-    locuriDict = f.get('/nrLocuri', None)
+    locuriDict = f.get('/maxCapacity', None)
     
     #convert from dictionary into list/number
     numere = []
     for key, value in numereDict.items():
-        numere.append(value['nrInmatriculare'])
+        numere.append(value['plateNumber'])
     
     locuri = []
     for key, value in locuriDict.items():
@@ -196,8 +196,8 @@ def open_or_close_barrier_indefinitely():
     authentication = firebase.FirebaseAuthentication('AIzaSyCKkmz83BU8kFzRwUc6I9Bh0-st8lVkcac', 'alexandru.mitrofan10@gmail.com', extra={'id': 'chs-system-de-parcare'})
     f = firebase.FirebaseApplication('https://chs-system-de-parcare-default-rtdb.europe-west1.firebasedatabase.app/', authentication=authentication)
 
-    stareBarieraDeschisaDict = f.get('/stareBarieraDeschisa', None)
-    stareBarieraInchisaDict = f.get('/stareBarieraInchisa', None)
+    stareBarieraDeschisaDict = f.get('/openBarrierIndefinitely', None)
+    stareBarieraInchisaDict = f.get('/closeBarrierIndefinitely', None)
 
     stareBarieraDeschisa = []
     for key, value in stareBarieraDeschisaDict.items():
@@ -232,7 +232,7 @@ def open_or_close_barrier_indefinitely():
         #recheck database for a change of state every 30 seconds
         while inchideBariera == True:
             
-            stareBarieraInchisaDict = f.get('/stareBarieraInchisa', None)
+            stareBarieraInchisaDict = f.get('/closeBarrierIndefinitely', None)
 
             stareBarieraInchisa = []
             for key, value in stareBarieraInchisaDict.items():
@@ -257,7 +257,7 @@ def open_or_close_barrier_indefinitely():
         #recheck database for a change of state every 30 seconds
         while deschideBariera == True:
             
-            stareBarieraDeschisaDict = f.get('/stareBarieraDeschisa', None)
+            stareBarieraDeschisaDict = f.get('/openBarrierIndefinitely', None)
 
             stareBarieraDeschisa = []
             for key, value in stareBarieraDeschisaDict.items():

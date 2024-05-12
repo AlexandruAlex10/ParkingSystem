@@ -1,4 +1,5 @@
 export interface plateNumberModel {
   key?: string | null,
-  nrInmatriculare?: string
+  plateNumber?: string
+  isPermanent?: boolean
 }
