@@ -133,6 +133,33 @@ export class PlateNumberService {
     })
   }
 
+  deleteExpiredDates() {
+    const db = getDatabase();
+    const plateNumbersRef = ref(db, this.dbPathPlateNumbers);
+    onValue(plateNumbersRef, (snapshot) => {
+      const data = snapshot.val();
+      const currentDate = new Date();
+      console.log("currentDate")
+      console.log(currentDate)
+      Object.keys(data).forEach((key) => {
+        const plateNumber = data[key];
+        if (!plateNumber.isPermanent && plateNumber.reservedDates) {
+          const updatedReservedDates = plateNumber.reservedDates.filter((date: string) => {
+            const reservedDate = new Date(date.split('/').reverse().join('-'));
+            return reservedDate >= currentDate;
+          });
+          if (updatedReservedDates.length > 0) {
+            const updates: Record<string, any> = {};
+            updates[`${this.dbPathPlateNumbers}/${key}/reservedDates`] = updatedReservedDates;
+            update(ref(db), updates);
+          } else {
+            remove(child(plateNumbersRef, key));
+          }
+        }
+      });
+    });
+  }
+
   public alertMessageDuplicateItem(plateNumber: string | null) {
     alert("Operation aborted: plate number " + plateNumber + " already exists!");
   }

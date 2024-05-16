@@ -30,6 +30,9 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit() {
+
+    this.plateNumberService.deleteExpiredDates()
+
     this.plateNumberService.getAllPlateNumbers()!.snapshotChanges().pipe(
       map(changes =>
         changes.map(c =>
