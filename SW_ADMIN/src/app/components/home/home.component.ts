@@ -38,7 +38,7 @@ export class HomeComponent implements OnInit {
       )
     ).subscribe(data => {
       this.plateNumbers = data;
-      this.filteredPlateNumbers = data;
+      this.processPlateNumbers(data);
     });
 
     this.plateNumberService.getCurrentCapacity().subscribe((currentCapacity) => {
@@ -61,6 +61,16 @@ export class HomeComponent implements OnInit {
       this.changeColorForCloseBarrierButtonOnInit();
     });
 
+  }
+  
+  processPlateNumbers(data: any[]) {
+    const today = new Date().toLocaleDateString('en-GB');
+    this.filteredPlateNumbers = data.filter(plate => {
+        if (!plate.isPermanent && !plate.reservedDates.includes(today)) return false;
+        return true;
+    }).map(plate => {
+      return plate;
+    });
   }
 
   public changeColorForOpenBarrierButtonOnInit() {
@@ -177,11 +187,13 @@ export class HomeComponent implements OnInit {
   filterResults(text: string) {
     if (!text) {
       this.filteredPlateNumbers = this.plateNumbers;
+      this.processPlateNumbers(this.filteredPlateNumbers)
       return;
     }
     this.filteredPlateNumbers = this.plateNumbers.filter(
       plateNumbers => plateNumbers?.plateNumber?.toLowerCase().includes(text.toLowerCase())
     );
+    this.processPlateNumbers(this.filteredPlateNumbers)
   }
 
   onDeletePlateNumber() {

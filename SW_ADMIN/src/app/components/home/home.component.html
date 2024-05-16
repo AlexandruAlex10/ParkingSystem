@@ -51,6 +51,6 @@
     </h3>
   </div>
   <ul class="list">
-    <li class="list-item" *ngFor="let plateNumber of filteredPlateNumbers">{{plateNumber.plateNumber}}</li>
+    <li class="list-item" *ngFor="let plateNumber of filteredPlateNumbers" [ngClass]="{'permanent': plateNumber.isPermanent}">{{plateNumber.plateNumber}}</li>
   </ul>
 </div>
