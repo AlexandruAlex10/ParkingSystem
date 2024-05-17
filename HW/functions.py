@@ -9,6 +9,7 @@ import RPi.GPIO as GPIO
 import os
 import json
 from firebase import firebase
+from datetime import date
 
 pwm = None
 
@@ -23,7 +24,7 @@ def analyse_image(IMAGE_PATH):
     #if there is a result, build plate number to be analysed for online service
     if len(results['results']):
         for r in results['results'][0]['candidates']:
-            returned[0].append(r['plate'])
+            returned[0].append(format_plate_number(r['plate']))
     
         #check image online, on OpenALPR API
         with open(IMAGE_PATH, 'rb') as image_file:
@@ -157,16 +158,8 @@ def check_server(result, cars):
     authentication = firebase.FirebaseAuthentication('AIzaSyCKkmz83BU8kFzRwUc6I9Bh0-st8lVkcac', 'alexandru.mitrofan10@gmail.com', extra={'id': 'chs-system-de-parcare'})
     f = firebase.FirebaseApplication('https://chs-system-de-parcare-default-rtdb.europe-west1.firebasedatabase.app/', authentication=authentication)
     
-    #gather authorized plate numbers
-    numereDict = f.get('/plateNumbers', None)
-    
     #gather parking lot max capacity
     locuriDict = f.get('/maxCapacity', None)
-    
-    #convert from dictionary into list/number
-    numere = []
-    for key, value in numereDict.items():
-        numere.append(value['plateNumber'])
     
     locuri = []
     for key, value in locuriDict.items():
@@ -178,16 +171,47 @@ def check_server(result, cars):
     if cars >= locuri:
         return False
     
-    #check if plate number exists in the database
-    for n in numere:
-        for n1 in result[0]:
-            if n1 == n:
-                return True
-    
-        for n1 in result[1]:
-            if n1 == n:
-                return True
-    
+    #get current date
+    today = date.today()
+    formatedDate = today.strftime("%d/%m/%Y")
+
+    #gather authorized plate numbers
+    numereDict = f.get('/plateNumbers', None)    
+
+    #check all plate numbers from the database
+    for key, value in numereDict.items():
+        numar = []
+        numar.append(value['plateNumber'])
+        numar = str(numar[-1])
+        #check if plate number exists in offline results
+        for nrOff in result[0]:
+            if nrOff == numar:
+                permanent = []
+                permanent.append(value['isPermanent'])
+                permanent = bool(permanent[-1])
+                #check if number is permanent or not
+                if permanent == False:
+                    dateRez = f.get('/plateNumbers/' + key + '/reservedDates', None)
+                    #check if today the temporar number has access
+                    if formatedDate in dateRez:
+                        return True
+                elif permanent == True:
+                    return True
+        #check if plate number exists in online results
+        for nrOn in result[1]:
+            if nrOn == numar:
+                permanent = []
+                permanent.append(value['isPermanent'])
+                permanent = bool(permanent[-1])
+                #check if number is permanent or not
+                if permanent == False:
+                    dateRez = f.get('/plateNumbers/' + key + '/reservedDates', None)
+                    #check if today the temporar number has access
+                    if formatedDate in dateRez:
+                        return True
+                elif permanent == True:
+                    return True
+
     return False
 
 #function leaves barrier open or closed indefinitely
