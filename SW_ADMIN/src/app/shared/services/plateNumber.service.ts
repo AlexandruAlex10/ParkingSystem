@@ -139,14 +139,13 @@ export class PlateNumberService {
     onValue(plateNumbersRef, (snapshot) => {
       const data = snapshot.val();
       const currentDate = new Date();
-      console.log("currentDate")
-      console.log(currentDate)
+      const formatCurrentDate = `${String(currentDate.getDate()).padStart(2, '0')}/${String(currentDate.getMonth() + 1).padStart(2, '0')}/${currentDate.getFullYear()}`;
       Object.keys(data).forEach((key) => {
         const plateNumber = data[key];
         if (!plateNumber.isPermanent && plateNumber.reservedDates) {
           const updatedReservedDates = plateNumber.reservedDates.filter((date: string) => {
-            const reservedDate = new Date(date.split('/').reverse().join('-'));
-            return reservedDate >= currentDate;
+            const reservedDate = date;
+            return reservedDate >= formatCurrentDate;
           });
           if (updatedReservedDates.length > 0) {
             const updates: Record<string, any> = {};
