@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "243095818394",
+    "firebase_url": "https://chs-system-de-parcare-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "chs-system-de-parcare",
+    "storage_bucket": "chs-system-de-parcare.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:243095818394:android:61b42c44666f82ddd6cf23",
+        "android_client_info": {
+          "package_name": "com.sw_user"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "243095818394-0uimllcrarjh96om8bf07se198683dqr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBr3lkWU0Sq8hfj7MrxjBMsb59All1zsHE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "243095818394-0uimllcrarjh96om8bf07se198683dqr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
