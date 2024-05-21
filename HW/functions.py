@@ -102,12 +102,12 @@ def turn_servo(state):
     global pwm
     GPIO.output(14, True)
     if state:
-        pwm.ChangeDutyCycle(9.6)
+        pwm.ChangeDutyCycle(9.7)
         print("")
         print("Barier is now open")
         print("")
     else:
-        pwm.ChangeDutyCycle(4.5)
+        pwm.ChangeDutyCycle(4.7)
         print("")
         print("Barier is now closed")
         print("")
