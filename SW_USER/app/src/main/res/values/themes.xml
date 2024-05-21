@@ -2,4 +2,5 @@
 <resources>
 
     <style name="Theme.SW_USER" parent="android:Theme.Material.Light.NoActionBar" />
+    
 </resources>
