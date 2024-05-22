@@ -1,46 +1,66 @@
 package com.sw_user
 
+import android.content.Intent
 import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.sw_user.ui.theme.SW_USERTheme
+import android.text.TextUtils
+import android.view.View
+import android.widget.Button
+import android.widget.EditText
+import android.widget.ProgressBar
+import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.auth.FirebaseAuth
 
-class Register : ComponentActivity() {
+class Register : AppCompatActivity() {
+
+    private lateinit var inputEmail: EditText
+    private lateinit var inputPassword: EditText
+    private lateinit var registerButton: Button
+    private lateinit var textLoginAccount: TextView
+
+    private lateinit var firebaseAuth: FirebaseAuth
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent {
-            SW_USERTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    Greeting2("Android")
+        setContentView(R.layout.activity_register)
+
+        firebaseAuth = FirebaseAuth.getInstance()
+
+        inputEmail = findViewById(R.id.inputEmail)
+        inputPassword = findViewById(R.id.inputPassword)
+        registerButton = findViewById(R.id.registerButton)
+        textLoginAccount = findViewById(R.id.textLoginAccount)
+
+        if(firebaseAuth.currentUser != null) {
+            startActivity(Intent(applicationContext, MainActivity::class.java))
+            finish()
+        }
+
+        registerButton.setOnClickListener {
+
+            val email = inputEmail.text.toString().trim()
+            val password = inputPassword.text.toString().trim()
+
+            if (TextUtils.isEmpty(email)) {
+                inputEmail.error = "Email is required!"
+                return@setOnClickListener
+            }
+
+            if (TextUtils.isEmpty(password)) {
+                inputPassword.error = "Password is required!"
+                return@setOnClickListener
+            }
+
+            firebaseAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        Toast.makeText(this@Register, "User Created!", Toast.LENGTH_SHORT).show()
+                        startActivity(Intent(applicationContext, MainActivity::class.java))
+                    } else {
+                        Toast.makeText(this@Register, "Error: " + task.exception?.message, Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
-        }
-    }
-}
-
-@Composable
-fun Greeting2(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview2() {
-    SW_USERTheme {
-        Greeting2("Android")
     }
 }
