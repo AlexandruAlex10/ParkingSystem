@@ -13,36 +13,27 @@
         android:roundIcon="@mipmap/parkicon"
         android:supportsRtl="true"
         android:theme="@style/Theme.SW_USER"
-        tools:targetApi="31">
+        tools:targetApi="34">
 
         <activity
             android:name=".Login"
-            android:exported="false"
-            android:label="@string/title_activity_login"
-            android:theme="@style/Theme.SW_USER">
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.MAIN" />-->
-
-<!--                <category android:name="android.intent.category.LAUNCHER" />-->
-<!--            </intent-filter>-->
-        </activity>
-
-        <activity
-            android:name=".Register"
             android:exported="true"
-            android:label="@string/title_activity_register"
             android:theme="@style/Theme.SW_USER">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
         <activity
+            android:name=".Register"
+            android:exported="true"
+            android:label=""
+            android:theme="@style/Theme.SW_USER" />
+
+        <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:label="MainActivity"
             android:theme="@style/Theme.SW_USER" />
 
     </application>

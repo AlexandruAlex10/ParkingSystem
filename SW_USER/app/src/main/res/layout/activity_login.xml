@@ -22,6 +22,7 @@
         android:textAppearance="@android:style/TextAppearance.Material.Large"
         android:textColor="#FFFFFF"
         android:textSize="45sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/inputEmail"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.496"
@@ -86,17 +87,40 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/inputPassword" />
 
-    <TextView
-        android:id="@+id/textRegisterAccount"
-        android:layout_width="wrap_content"
+    <LinearLayout
+
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="300dp"
-        android:text="@string/don_t_have_an_account_sign_up"
-        android:textColor="#FFFFFF"
-        android:textSize="20sp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="328dp"
+        android:orientation="horizontal"
+        android:gravity="center_horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/loginButton" />
+        app:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+            android:id="@+id/textRegisterAccount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="5dp"
+            android:text="@string/not_registered"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp" />
+
+        <Button
+            android:id="@+id/registerButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/my_button"
+            android:text="@string/sign_up"
+            android:textAllCaps="false"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:onClick="goToRegister" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

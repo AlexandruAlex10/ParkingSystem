@@ -6,7 +6,6 @@ import android.text.TextUtils
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
-import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -17,7 +16,7 @@ class Register : AppCompatActivity() {
     private lateinit var inputEmail: EditText
     private lateinit var inputPassword: EditText
     private lateinit var registerButton: Button
-    private lateinit var textLoginAccount: TextView
+    private lateinit var loginButton: TextView
 
     private lateinit var firebaseAuth: FirebaseAuth
 
@@ -30,7 +29,7 @@ class Register : AppCompatActivity() {
         inputEmail = findViewById(R.id.inputEmail)
         inputPassword = findViewById(R.id.inputPassword)
         registerButton = findViewById(R.id.registerButton)
-        textLoginAccount = findViewById(R.id.textLoginAccount)
+        loginButton = findViewById(R.id.loginButton)
 
         if(firebaseAuth.currentUser != null) {
             startActivity(Intent(applicationContext, MainActivity::class.java))
@@ -67,5 +66,10 @@ class Register : AppCompatActivity() {
                     }
                 }
             }
+    }
+
+    fun goToLogin(view: View) {
+        startActivity(Intent(applicationContext, Login::class.java))
+        finish()
     }
 }
