@@ -52,6 +52,11 @@ class Register : AppCompatActivity() {
                 return@setOnClickListener
             }
 
+            if (password.length < 8) {
+                inputPassword.error = "Password must contain at least 8 characters!"
+                return@setOnClickListener
+            }
+
             firebaseAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {

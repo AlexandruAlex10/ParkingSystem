@@ -9,4 +9,8 @@
     <string name="submit">Submit</string>
     <string name="don_t_have_an_account_sign_up">Don\'t have an account? Sign Up</string>
     <string name="already_have_an_account_sign_in">Already have an account? Sign In</string>
+    <string name="welcome">Welcome!</string>
+    <string name="reserve_a_spot">Reserve a spot</string>
+    <string name="transaction_history">Transaction History</string>
+    <string name="log_out">Log Out</string>
 </resources>
