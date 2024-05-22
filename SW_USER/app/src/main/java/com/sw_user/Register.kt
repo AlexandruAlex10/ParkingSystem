@@ -10,6 +10,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.FirebaseFirestore
 
 class Register : AppCompatActivity() {
 
@@ -19,22 +21,19 @@ class Register : AppCompatActivity() {
     private lateinit var loginButton: TextView
 
     private lateinit var firebaseAuth: FirebaseAuth
+    private lateinit var firebaseDatabase: FirebaseFirestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
 
         firebaseAuth = FirebaseAuth.getInstance()
+        firebaseDatabase = FirebaseFirestore.getInstance()
 
         inputEmail = findViewById(R.id.inputEmail)
         inputPassword = findViewById(R.id.inputPassword)
         registerButton = findViewById(R.id.registerButton)
         loginButton = findViewById(R.id.loginButton)
-
-        if(firebaseAuth.currentUser != null) {
-            startActivity(Intent(applicationContext, MainActivity::class.java))
-            finish()
-        }
 
         registerButton.setOnClickListener {
 
@@ -59,6 +58,13 @@ class Register : AppCompatActivity() {
             firebaseAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
+                        val uID = firebaseAuth.currentUser!!.uid
+                        val documentReference: DocumentReference =
+                            firebaseDatabase.collection("client").document(uID)
+                        val client: MutableMap<String, Any> = mutableMapOf()
+                        client["email"] = email
+                        client["uid"] = uID
+                        documentReference.set(client)
                         Toast.makeText(this@Register, "User Created!", Toast.LENGTH_SHORT).show()
                         startActivity(Intent(applicationContext, MainActivity::class.java))
                     } else {

@@ -28,7 +28,6 @@
         <activity
             android:name=".Register"
             android:exported="true"
-            android:label=""
             android:theme="@style/Theme.SW_USER" />
 
         <activity

@@ -31,6 +31,11 @@ class Login : ComponentActivity() {
         loginButton = findViewById(R.id.loginButton)
         registerButton = findViewById(R.id.registerButton)
 
+        if(firebaseAuth.currentUser != null) {
+            startActivity(Intent(applicationContext, MainActivity::class.java))
+            finish()
+        }
+
         loginButton.setOnClickListener {
 
             val email = inputEmail.text.toString().trim()
