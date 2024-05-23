@@ -15,4 +15,6 @@
     <string name="not_registered">Not registered?</string>
     <string name="your_email_address"><![CDATA[<Your Email Address>]]></string>
     <string name="forgot_password">Forgot Password?</string>
+    <string name="email_not_verified">Email not verified!</string>
+    <string name="verify_now">Verify Now</string>
 </resources>

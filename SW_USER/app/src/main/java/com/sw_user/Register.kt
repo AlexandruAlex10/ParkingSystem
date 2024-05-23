@@ -58,6 +58,15 @@ class Register : AppCompatActivity() {
             firebaseAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
+
+                        val user = firebaseAuth.currentUser!!
+
+                        user.sendEmailVerification().addOnSuccessListener {
+                            Toast.makeText(this@Register, "Verification email sent, check your inbox!", Toast.LENGTH_SHORT).show()
+                        }.addOnFailureListener { e ->
+                            Toast.makeText(this@Register, "Verification email not sent! Error: " + e.message, Toast.LENGTH_SHORT).show()
+                        }
+
                         val uID = firebaseAuth.currentUser!!.uid
                         val documentReference: DocumentReference =
                             firebaseDatabase.collection("client").document(uID)
