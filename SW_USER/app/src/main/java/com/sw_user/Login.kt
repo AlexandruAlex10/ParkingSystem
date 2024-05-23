@@ -1,5 +1,6 @@
 package com.sw_user
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
@@ -16,6 +17,7 @@ class Login : ComponentActivity() {
     private lateinit var inputEmail: EditText
     private lateinit var inputPassword: EditText
     private lateinit var loginButton: Button
+    private lateinit var forgotPasswordButton: Button
     private lateinit var registerButton: TextView
 
     private lateinit var firebaseAuth: FirebaseAuth
@@ -29,6 +31,7 @@ class Login : ComponentActivity() {
         inputEmail = findViewById(R.id.inputEmail)
         inputPassword = findViewById(R.id.inputPassword)
         loginButton = findViewById(R.id.loginButton)
+        forgotPasswordButton = findViewById(R.id.forgotPasswordButton)
         registerButton = findViewById(R.id.registerButton)
 
         if(firebaseAuth.currentUser != null) {
@@ -66,6 +69,31 @@ class Login : ComponentActivity() {
                     }
                 }
         }
+
+        forgotPasswordButton.setOnClickListener { view ->
+
+            val inputEmailPasswordReset = EditText(view.context)
+
+            val passwordResetDialog = AlertDialog.Builder(view.context)
+            passwordResetDialog.setTitle("Reset Password")
+            passwordResetDialog.setMessage("Enter Your Email:")
+            passwordResetDialog.setView(inputEmailPasswordReset)
+
+            passwordResetDialog.setPositiveButton("Submit") { dialog, which ->
+                val email = inputEmailPasswordReset.text.toString()
+
+                firebaseAuth.sendPasswordResetEmail(email).addOnSuccessListener {
+                    Toast.makeText(this@Login, "Email sent, check your inbox!", Toast.LENGTH_SHORT).show()
+                }.addOnFailureListener { e ->
+                    Toast.makeText(this@Login, "Email not sent! Error: " + e.message, Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            passwordResetDialog.setNegativeButton("Cancel") { dialog, which -> /* close dialog */ }
+
+            passwordResetDialog.create().show()
+        }
+
     }
 
     fun goToRegister(view: View) {

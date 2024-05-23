@@ -15,7 +15,6 @@
         android:id="@+id/textSignUp"
         android:layout_width="350dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
         android:fontFamily="sans-serif-black"
         android:text="@string/sign_up"
         android:textAlignment="center"
@@ -46,6 +45,7 @@
         android:textSize="20sp"
         app:layout_constraintBottom_toTopOf="@+id/inputPassword"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textSignUp" />
 
@@ -77,9 +77,9 @@
         android:layout_marginBottom="375dp"
         android:background="@drawable/my_button"
         android:text="@string/submit"
-        android:textAlignment="center"
         android:textColor="#FFFFFF"
         android:textSize="20sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -90,11 +90,9 @@
         android:id="@+id/signUpContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="328dp"
-        android:orientation="horizontal"
+        android:layout_marginBottom="330dp"
         android:gravity="center_horizontal"
+        android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
@@ -113,12 +111,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/my_button"
+            android:onClick="goToLogin"
             android:text="@string/sign_in"
             android:textAllCaps="false"
             android:textColor="#FFFFFF"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:onClick="goToLogin" />
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
     </LinearLayout>
 

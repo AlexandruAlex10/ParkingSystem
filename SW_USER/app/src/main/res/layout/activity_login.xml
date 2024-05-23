@@ -15,7 +15,6 @@
         android:id="@+id/textSignIn"
         android:layout_width="350dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
         android:fontFamily="sans-serif-black"
         android:text="@string/sign_in"
         android:textAlignment="center"
@@ -74,16 +73,34 @@
         android:id="@+id/loginButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="375dp"
+        android:layout_marginBottom="430dp"
         android:background="@drawable/my_button"
         android:text="@string/submit"
-        android:textAlignment="center"
         android:textColor="#FFFFFF"
         android:textSize="20sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/inputPassword" />
+
+
+    <Button
+        android:id="@+id/forgotPasswordButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="360dp"
+        android:background="@drawable/my_button"
+        android:text="@string/forgot_password"
+        android:textAllCaps="false"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/loginButton" />
+
 
     <LinearLayout
 
@@ -92,9 +109,9 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginBottom="328dp"
-        android:orientation="horizontal"
+        android:layout_marginBottom="325dp"
         android:gravity="center_horizontal"
+        android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
@@ -113,12 +130,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/my_button"
+            android:onClick="goToRegister"
             android:text="@string/sign_up"
             android:textAllCaps="false"
             android:textColor="#FFFFFF"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:onClick="goToRegister" />
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
     </LinearLayout>
 
