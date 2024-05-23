@@ -15,25 +15,35 @@
         android:id="@+id/textWelcome"
         android:layout_width="350dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
         android:fontFamily="sans-serif-black"
         android:text="@string/welcome"
         android:textAlignment="center"
-        android:textAppearance="@android:style/TextAppearance.Material.Large"
         android:textColor="#FFFFFF"
         android:textSize="45sp"
-        app:layout_constraintBottom_toTopOf="@+id/reserveSpotButton"
+        app:layout_constraintBottom_toTopOf="@+id/textEmail"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textEmail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-black"
+        android:text="@string/your_email_address"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toTopOf="@+id/reserveSpotButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textWelcome" />
 
     <Button
         android:id="@+id/reserveSpotButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"
-        android:layout_marginBottom="580dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginBottom="525dp"
         android:background="@drawable/my_button"
         android:padding="2dp"
         android:text="@string/reserve_a_spot"
@@ -42,16 +52,15 @@
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textWelcome" />
+        app:layout_constraintTop_toBottomOf="@+id/textEmail" />
 
     <Button
         android:id="@+id/transactionsButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"
-        android:layout_marginBottom="464dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginBottom="425dp"
         android:background="@drawable/my_button"
         android:text="@string/transaction_history"
         android:textAlignment="center"
@@ -60,24 +69,25 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/reserveSpotButton" />
+        app:layout_constraintTop_toBottomOf="@+id/reserveSpotButton"
+        app:layout_constraintVertical_bias="1.0" />
 
     <Button
         android:id="@+id/logoutButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"
-        android:layout_marginBottom="356dp"
+        android:layout_marginTop="50dp"
+        android:layout_marginBottom="325dp"
         android:background="@drawable/my_button"
+        android:onClick="logOut"
         android:text="@string/log_out"
         android:textAlignment="center"
         android:textColor="#FFFFFF"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/transactionsButton"
-        android:onClick="logOut" />
+        app:layout_constraintVertical_bias="1.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
