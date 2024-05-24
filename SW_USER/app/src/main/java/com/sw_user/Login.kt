@@ -10,9 +10,10 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 
-class Login : ComponentActivity() {
+class Login : AppCompatActivity() {
 
     private lateinit var inputEmail: EditText
     private lateinit var inputPassword: EditText

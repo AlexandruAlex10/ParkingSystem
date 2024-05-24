@@ -39,6 +39,7 @@
         android:paddingTop="5dp"
         android:paddingRight="5dp"
         android:paddingBottom="5dp"
+        android:theme="@style/EditText.SW_USER"
         android:textAppearance="@android:style/TextAppearance.Material.Large"
         android:textColor="#FFFFFF"
         android:textColorHint="#BFFFFFFF"
@@ -60,6 +61,7 @@
         android:paddingTop="5dp"
         android:paddingRight="5dp"
         android:paddingBottom="5dp"
+        android:theme="@style/EditText.SW_USER"
         android:textAppearance="@android:style/TextAppearance.Material.Large"
         android:textColor="#FFFFFF"
         android:textColorHint="#BFFFFFFF"
@@ -100,7 +102,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/loginButton" />
-
 
     <LinearLayout
 

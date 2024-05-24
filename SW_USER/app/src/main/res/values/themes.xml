@@ -2,11 +2,21 @@
 <resources>
 
     <style name="Theme.SW_USER" parent="Theme.AppCompat">
-
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
-
     </style>
 
-    
+    <style name="Calendar.SW_USER" parent="Theme.MaterialComponents">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="colorPrimary">@color/white</item>
+    </style>
+
+    <style name="EditText.SW_USER" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorControlNormal">@color/white</item>
+        <item name="colorControlActivated">@color/white</item>
+        <item name="colorControlHighlight">@color/white</item>
+    </style>
+
+
 </resources>
