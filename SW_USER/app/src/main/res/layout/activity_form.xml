@@ -95,16 +95,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="10dp"
-            android:text="@string/selected_interval"
             android:textColor="#FFFFFF"
-            android:textSize="20sp" />
+            android:textSize="15sp" />
 
         <Button
             android:id="@+id/datePickerButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/my_button"
-            android:text="@string/select"
+            android:text="@string/select_dates"
             android:textAllCaps="false"
             android:textColor="#FFFFFF"
             android:textSize="18sp"

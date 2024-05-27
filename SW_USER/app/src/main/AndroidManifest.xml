@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
@@ -16,8 +16,13 @@
         android:theme="@style/Theme.SW_USER"
         tools:targetApi="34">
         <activity
+            android:name=".Transactions"
+            android:exported="true"
+            android:label="@string/title_activity_transactions"
+            android:theme="@style/Theme.SW_USER" />
+        <activity
             android:name=".Form"
-            android:exported="false"
+            android:exported="true"
             android:label="@string/title_activity_form"
             android:theme="@style/Calendar.SW_USER" />
         <activity

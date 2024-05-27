@@ -75,6 +75,11 @@ class MainActivity : AppCompatActivity() {
         finish()
     }
 
+    fun goToTransactions(view: View) {
+        startActivity(Intent(applicationContext, Transactions::class.java))
+        finish()
+    }
+
     fun logOut(view: View) {
         FirebaseAuth.getInstance().signOut()
         Toast.makeText(this@MainActivity, "Logged Out Successfully!", Toast.LENGTH_SHORT).show()

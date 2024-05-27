@@ -10,6 +10,8 @@ import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.MaterialDatePicker
@@ -24,13 +26,13 @@ import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
 import java.util.regex.Pattern
-import kotlin.properties.Delegates
 
 class Form : AppCompatActivity() {
 
     private lateinit var firebaseDatabase: FirebaseDatabase
     private lateinit var dbRefMaxCapacity: DatabaseReference
 
+    private lateinit var plateNumber: PlateNumber
     private var maxCapacity: Int = 0
 
     private lateinit var inputPlateNumber: EditText
@@ -44,27 +46,16 @@ class Form : AppCompatActivity() {
         setContentView(R.layout.activity_form)
 
         firebaseDatabase = FirebaseDatabase.getInstance();
-        dbRefMaxCapacity = FirebaseDatabase.getInstance().getReference("/nrLocuri/maxCapacity")
+        dbRefMaxCapacity = FirebaseDatabase.getInstance().getReference("/maxCapacity/maxCapacity")
+
+        plateNumber = PlateNumber()
+        maxCapacity = 0
 
         inputPlateNumber = findViewById(R.id.inputPlateLicense)
         plateNumberHelpButton = findViewById(R.id.plateNumberHelpButton)
         selectedDate = findViewById(R.id.textSelectedDate)
         datePicker = findViewById(R.id.datePickerButton)
         initOrderButton = findViewById(R.id.initOrderButton)
-
-        initOrderButton.setOnClickListener {
-            val plateNumber = inputPlateNumber.text.toString()
-
-            if (TextUtils.isEmpty(plateNumber)) {
-                inputPlateNumber.error = "Plate number is required!"
-                return@setOnClickListener
-            }
-
-            if(!validatePlateNumber(plateNumber)) {
-                inputPlateNumber.error = "Invalid plate number!"
-                return@setOnClickListener
-            }
-        }
 
         dbRefMaxCapacity.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
@@ -121,6 +112,45 @@ class Form : AppCompatActivity() {
                 selectedDate.text = selectedDateRange
             }
             datePicker.show(supportFragmentManager, "DATE_RANGE_PICKER")
+        }
+
+        initOrderButton.setOnClickListener { view ->
+            val plateNumber = inputPlateNumber.text.toString()
+
+            if (TextUtils.isEmpty(plateNumber)) {
+                inputPlateNumber.error = "Plate number is required!"
+                return@setOnClickListener
+            }
+
+            if(!validatePlateNumber(plateNumber)) {
+                inputPlateNumber.error = "Invalid plate number!"
+                return@setOnClickListener
+            }
+
+            if (selectedDate.text.isNullOrEmpty()) {
+                Toast.makeText(this@Form, "Please select a date range!", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            val initOrderDialog = AlertDialog.Builder(view.context)
+            initOrderDialog.setTitle("Confirm Order?")
+            initOrderDialog.setMessage("Please double check your order details one more time!")
+
+            initOrderDialog.setPositiveButton("Confirm!") {dialog, which ->
+                // send data into the database TODO
+
+                val orderCompletedDialog = AlertDialog.Builder(view.context)
+                orderCompletedDialog.setTitle("Thank you, order completed!")
+                orderCompletedDialog.setMessage("Your order details can be found in 'Transaction History' section!")
+                orderCompletedDialog.setPositiveButton("Ok") {dialog, which ->
+                    goToDashboard(view)
+                }
+                orderCompletedDialog.show()
+            }
+
+            initOrderDialog.setNegativeButton("Go Back!") { dialog, which -> /* close dialog */ }
+
+            initOrderDialog.show()
         }
     }
 
