@@ -6,12 +6,13 @@ import requests
 import base64
 import json
 import RPi.GPIO as GPIO
+import pigpio
 import os
 import json
 from firebase import firebase
 from datetime import date
 
-pwm = None
+pwm = pigpio.pi()
 
 #analyse image function
 def analyse_image(IMAGE_PATH):
@@ -85,36 +86,31 @@ def take_image(IMAGE_PATH):
 
 #initialize pins function
 def setup_pins():
-    global pwm
     GPIO.setmode(GPIO.BCM)
     GPIO.setwarnings(False)
     GPIO.setup(12, GPIO.IN)
     GPIO.setup(15, GPIO.OUT)
     GPIO.output(15, GPIO.LOW)
-    GPIO.setup(14, GPIO.OUT)
-    pwm = GPIO.PWM(14, 50)
-    pwm.start(0)
+    pwm.set_mode(14, pigpio.OUTPUT)
+    pwm.set_PWM_frequency(14, 50)
     turn_servo(0)
 
 
 #function that turns the actuator
 def turn_servo(state):
-    global pwm
-    GPIO.output(14, True)
     if state:
-        pwm.ChangeDutyCycle(9.7)
+        pwm.set_servo_pulsewidth(14, 2000)
         print("")
         print("Barier is now open")
         print("")
     else:
-        pwm.ChangeDutyCycle(4.7)
+        pwm.set_servo_pulsewidth(14, 1000)
         print("")
         print("Barier is now closed")
         print("")
     sleep(2)
-    pwm.ChangeDutyCycle(0)
-    GPIO.output(14, False)
-    GPIO.output(14, GPIO.LOW)
+    pwm.set_PWM_dutycycle(14, 0)
+    pwm.set_PWM_frequency(14, 0)
 
 #function that reads the proximity sensor
 def check_distance():
