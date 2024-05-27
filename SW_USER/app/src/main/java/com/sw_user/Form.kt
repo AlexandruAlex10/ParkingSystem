@@ -62,66 +62,11 @@ class Form : AppCompatActivity() {
         getMaxCapacity()
 
         datePicker.setOnClickListener {
-            val materialDatePicker = MaterialDatePicker.Builder.dateRangePicker()
-
-            val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC+2"))
-            calendar.add(Calendar.DAY_OF_YEAR, 0)
-            val todayDate = calendar.timeInMillis
-            val currentDateString = millisecondsToDateWithFormat(todayDate)
-            materialDatePicker.setTitleText("Current Date: $currentDateString")
-            calendar.add(Calendar.DAY_OF_YEAR, 1)
-            val tomorrowInMillis = calendar.timeInMillis
-            calendar.add(Calendar.MONTH, 1)
-            val lastDayNextMonthInMillis = calendar.timeInMillis
-
-            val constraintsBuilder = CalendarConstraints.Builder()
-            constraintsBuilder.setStart(tomorrowInMillis)
-            constraintsBuilder.setEnd(lastDayNextMonthInMillis)
-            constraintsBuilder.setValidator(object : CalendarConstraints.DateValidator {
-                val todayInMillis = MaterialDatePicker.todayInUtcMilliseconds()
-
-                override fun isValid(date: Long): Boolean {
-                    return date > todayInMillis
-                }
-
-                override fun writeToParcel(dest: Parcel, flags: Int) {
-                    dest.writeLong(todayInMillis)
-                }
-
-                override fun describeContents(): Int {
-                    return 0
-                }
-            })
-            materialDatePicker.setCalendarConstraints(constraintsBuilder.build())
-
-            val datePicker = materialDatePicker.build()
-            datePicker.addOnPositiveButtonClickListener { selection ->
-                val startDate = selection.first
-                val endDate = selection.second
-                val startDateString = millisecondsToDateWithFormat(startDate)
-                val endDateString = millisecondsToDateWithFormat(endDate)
-                val selectedDateRange: String = if(startDate == endDate) {
-                    startDateString
-                } else {
-                    "$startDateString - $endDateString"
-                }
-                selectedDate.visibility = View.VISIBLE
-                selectedDate.text = selectedDateRange
-
-                var currentDate = startDate
-                plateNumberObject.emptyAllowedDates()
-                while (currentDate <= endDate) {
-                    plateNumberObject.addAllowedDate(millisecondsToDateWithFormat(currentDate))
-                    currentDate += 86_400_000
-                }
-                val calculatePrice = pricePerDay * plateNumberObject.allowedDates.size
-                val buildTextPrice = "Price: $calculatePrice€"
-                textPrice.text = buildTextPrice
-            }
-            datePicker.show(supportFragmentManager, "DATE_RANGE_PICKER")
+            createRangeDatePicker()
         }
 
         initOrderButton.setOnClickListener { view ->
+
             val plateNumberText = inputPlateNumber.text.toString()
 
             if (TextUtils.isEmpty(plateNumberText)) {
@@ -134,37 +79,12 @@ class Form : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            if (selectedDate.text.isNullOrEmpty()) {
+            if(selectedDate.text.isNullOrEmpty()) {
                 Toast.makeText(this@Form, "Please select a date range!", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            val initOrderDialog = AlertDialog.Builder(view.context)
-            initOrderDialog.setTitle("Confirm Order?")
-            initOrderDialog.setMessage("Please double check your order details one more time!")
-
-            initOrderDialog.setPositiveButton("Confirm!") { dialog, which ->
-
-                dbRefPlateNumbers = firebaseDatabase.getReference("plateNumbers").push()
-
-                plateNumberObject.plateNumber = plateNumberText
-                plateNumberObject.isPermanent = false
-
-                dbRefPlateNumbers.setValue(plateNumberObject)
-                    .addOnSuccessListener {
-                        val orderCompletedDialog = AlertDialog.Builder(view.context)
-                        orderCompletedDialog.setTitle("Thank you, order completed!")
-                        orderCompletedDialog.setMessage("Your order details can be found in 'Transaction History' section!")
-                        orderCompletedDialog.setPositiveButton("Ok") { dialog, which ->
-                            goToDashboard(view)
-                        }
-                        orderCompletedDialog.show()
-                    }
-            }
-
-            initOrderDialog.setNegativeButton("Go Back!") { dialog, which -> /* close dialog */ }
-
-            initOrderDialog.show()
+            initiateOrder(view, plateNumberText)
         }
     }
 
@@ -189,17 +109,107 @@ class Form : AppCompatActivity() {
         })
     }
 
-    private fun millisecondsToDate(milliseconds: Long): String {
-        val calendar = Calendar.getInstance()
-        calendar.timeInMillis = milliseconds
-        return calendar.toString()
-    }
+//    private fun millisecondsToDate(milliseconds: Long): String {
+//        val calendar = Calendar.getInstance()
+//        calendar.timeInMillis = milliseconds
+//        return calendar.toString()
+//    }
 
     private fun millisecondsToDateWithFormat(milliseconds: Long): String {
         val calendar = Calendar.getInstance()
         calendar.timeInMillis = milliseconds
         val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
         return dateFormat.format(calendar.time)
+    }
+
+    private fun createRangeDatePicker() {
+        val materialDatePicker = MaterialDatePicker.Builder.dateRangePicker()
+
+        val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC+2"))
+        calendar.add(Calendar.DAY_OF_YEAR, 0)
+        val todayDate = calendar.timeInMillis
+        val currentDateString = millisecondsToDateWithFormat(todayDate)
+        materialDatePicker.setTitleText("Current Date: $currentDateString")
+        calendar.add(Calendar.DAY_OF_YEAR, 1)
+        val tomorrowInMillis = calendar.timeInMillis
+        calendar.add(Calendar.MONTH, 1)
+        val lastDayNextMonthInMillis = calendar.timeInMillis
+
+        val constraintsBuilder = CalendarConstraints.Builder()
+        constraintsBuilder.setStart(tomorrowInMillis)
+        constraintsBuilder.setEnd(lastDayNextMonthInMillis)
+        constraintsBuilder.setValidator(object : CalendarConstraints.DateValidator {
+            val todayInMillis = MaterialDatePicker.todayInUtcMilliseconds()
+
+            override fun isValid(date: Long): Boolean {
+                return date > todayInMillis
+            }
+
+            override fun writeToParcel(dest: Parcel, flags: Int) {
+                dest.writeLong(todayInMillis)
+            }
+
+            override fun describeContents(): Int {
+                return 0
+            }
+        })
+        materialDatePicker.setCalendarConstraints(constraintsBuilder.build())
+
+        val datePicker = materialDatePicker.build()
+        datePicker.addOnPositiveButtonClickListener { selection ->
+            val startDate = selection.first
+            val endDate = selection.second
+            val startDateString = millisecondsToDateWithFormat(startDate)
+            val endDateString = millisecondsToDateWithFormat(endDate)
+            val selectedDateRange: String = if(startDate == endDate) {
+                startDateString
+            } else {
+                "$startDateString - $endDateString"
+            }
+            selectedDate.visibility = View.VISIBLE
+            selectedDate.text = selectedDateRange
+
+            var currentDate = startDate
+            plateNumberObject.emptyAllowedDates()
+            while (currentDate <= endDate) {
+                plateNumberObject.addAllowedDate(millisecondsToDateWithFormat(currentDate))
+                currentDate += 86_400_000
+            }
+            val calculatePrice = pricePerDay * plateNumberObject.allowedDates.size
+            val buildTextPrice = "Price: $calculatePrice€"
+            textPrice.text = buildTextPrice
+        }
+        datePicker.show(supportFragmentManager, "DATE_RANGE_PICKER")
+    }
+
+    private fun initiateOrder (view: View, plateNumberText: String) {
+
+        val initOrderDialog = AlertDialog.Builder(view.context)
+        initOrderDialog.setTitle("Confirm Order?")
+        initOrderDialog.setMessage("Please double check your order details one more time!")
+
+        initOrderDialog.setPositiveButton("Confirm!") { dialog, which ->
+
+            dbRefPlateNumbers = firebaseDatabase.getReference("plateNumbers").push()
+
+            plateNumberObject.plateNumber = plateNumberText
+            plateNumberObject.isPermanent = false
+
+            dbRefPlateNumbers.setValue(plateNumberObject)
+                .addOnSuccessListener {
+                    val orderCompletedDialog = AlertDialog.Builder(view.context)
+                    orderCompletedDialog.setTitle("Thank you, order completed!")
+                    orderCompletedDialog.setMessage("Your order details can be found in 'Transaction History' section!")
+                    orderCompletedDialog.setPositiveButton("Ok") { dialog, which ->
+                        goToDashboard(view)
+                    }
+                    orderCompletedDialog.show()
+                }
+        }
+
+        initOrderDialog.setNegativeButton("Go Back!") { dialog, which -> /* close dialog */ }
+
+        initOrderDialog.show()
     }
 
     fun goToPlateNumberPage(view: View) {
