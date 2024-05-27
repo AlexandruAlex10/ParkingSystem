@@ -5,40 +5,32 @@ import java.util.Date;
 import java.util.List;
 
 public class PlateNumber {
-    private String key;
     private String plateNumber;
     private Boolean isPermanent;
-    private List<Date> allowedDates = new ArrayList<>();
-
-    public String getKey() {
-        return key;
-    }
+    private List<String> allowedDates = new ArrayList<>();
 
     public String getPlateNumber() {
         return plateNumber;
     }
-
-    public Boolean getIsPermanent() {
-        return isPermanent;
-    }
-
-    public List<Date> getAllowedDates() {
-        return allowedDates;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
-    }
-
     public void setPlateNumber(String plateNumber) {
         this.plateNumber = plateNumber;
     }
-
+    public Boolean getIsPermanent() {
+        return isPermanent;
+    }
     public void setIsPermanent(Boolean isPermanent) {
         this.isPermanent = isPermanent;
     }
-
-    public void setAllowedDates(List<Date> allowedDates) {
+    public List<String> getAllowedDates() {
+        return allowedDates;
+    }
+    public void setAllowedDates(List<String> allowedDates) {
         this.allowedDates = allowedDates;
+    }
+    public void addAllowedDate(String allowedDate) {
+        allowedDates.add(allowedDate);
+    }
+    public void emptyAllowedDates() {
+        allowedDates.clear();
     }
 }

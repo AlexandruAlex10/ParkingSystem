@@ -22,7 +22,6 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import java.text.SimpleDateFormat
 import java.util.Calendar
-import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
 import java.util.regex.Pattern
@@ -30,52 +29,45 @@ import java.util.regex.Pattern
 class Form : AppCompatActivity() {
 
     private lateinit var firebaseDatabase: FirebaseDatabase
-    private lateinit var dbRefMaxCapacity: DatabaseReference
+    private lateinit var dbRefPlateNumbers: DatabaseReference
 
-    private lateinit var plateNumber: PlateNumber
+    private lateinit var plateNumberObject: PlateNumber
     private var maxCapacity: Int = 0
+    private var pricePerDay: Int = 0
 
     private lateinit var inputPlateNumber: EditText
     private lateinit var plateNumberHelpButton: Button
     private lateinit var selectedDate: TextView
     private lateinit var datePicker: Button
+    private lateinit var textPrice: TextView
     private lateinit var initOrderButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_form)
 
-        firebaseDatabase = FirebaseDatabase.getInstance();
-        dbRefMaxCapacity = FirebaseDatabase.getInstance().getReference("/maxCapacity/maxCapacity")
+        firebaseDatabase = FirebaseDatabase.getInstance()
 
-        plateNumber = PlateNumber()
+        plateNumberObject = PlateNumber()
         maxCapacity = 0
+        pricePerDay = 2
 
         inputPlateNumber = findViewById(R.id.inputPlateLicense)
         plateNumberHelpButton = findViewById(R.id.plateNumberHelpButton)
         selectedDate = findViewById(R.id.textSelectedDate)
         datePicker = findViewById(R.id.datePickerButton)
+        textPrice = findViewById(R.id.textPrice)
         initOrderButton = findViewById(R.id.initOrderButton)
 
-        dbRefMaxCapacity.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val maxCapacityString = dataSnapshot.getValue(String::class.java)
-                maxCapacity = maxCapacityString?.toInt()!!
-            }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-                Log.d("QUERY_ERR","Database Error: ${databaseError.message}")
-            }
-        })
+        getMaxCapacity()
 
         datePicker.setOnClickListener {
             val materialDatePicker = MaterialDatePicker.Builder.dateRangePicker()
 
-            val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
             val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC+2"))
             calendar.add(Calendar.DAY_OF_YEAR, 0)
-            val todayDate = calendar.time
-            val currentDateString = dateFormat.format(todayDate)
+            val todayDate = calendar.timeInMillis
+            val currentDateString = millisecondsToDateWithFormat(todayDate)
             materialDatePicker.setTitleText("Current Date: $currentDateString")
             calendar.add(Calendar.DAY_OF_YEAR, 1)
             val tomorrowInMillis = calendar.timeInMillis
@@ -105,24 +97,39 @@ class Form : AppCompatActivity() {
             val datePicker = materialDatePicker.build()
             datePicker.addOnPositiveButtonClickListener { selection ->
                 val startDate = selection.first
-                val startDateString = dateFormat.format(Date(startDate))
                 val endDate = selection.second
-                val endDateString = dateFormat.format(Date(endDate))
-                val selectedDateRange = "$startDateString - $endDateString"
+                val startDateString = millisecondsToDateWithFormat(startDate)
+                val endDateString = millisecondsToDateWithFormat(endDate)
+                val selectedDateRange: String = if(startDate == endDate) {
+                    startDateString
+                } else {
+                    "$startDateString - $endDateString"
+                }
+                selectedDate.visibility = View.VISIBLE
                 selectedDate.text = selectedDateRange
+
+                var currentDate = startDate
+                plateNumberObject.emptyAllowedDates()
+                while (currentDate <= endDate) {
+                    plateNumberObject.addAllowedDate(millisecondsToDateWithFormat(currentDate))
+                    currentDate += 86_400_000
+                }
+                val calculatePrice = pricePerDay * plateNumberObject.allowedDates.size
+                val buildTextPrice = "Price: $calculatePrice€"
+                textPrice.text = buildTextPrice
             }
             datePicker.show(supportFragmentManager, "DATE_RANGE_PICKER")
         }
 
         initOrderButton.setOnClickListener { view ->
-            val plateNumber = inputPlateNumber.text.toString()
+            val plateNumberText = inputPlateNumber.text.toString()
 
-            if (TextUtils.isEmpty(plateNumber)) {
+            if (TextUtils.isEmpty(plateNumberText)) {
                 inputPlateNumber.error = "Plate number is required!"
                 return@setOnClickListener
             }
 
-            if(!validatePlateNumber(plateNumber)) {
+            if(!validatePlateNumber(plateNumberText)) {
                 inputPlateNumber.error = "Invalid plate number!"
                 return@setOnClickListener
             }
@@ -136,16 +143,23 @@ class Form : AppCompatActivity() {
             initOrderDialog.setTitle("Confirm Order?")
             initOrderDialog.setMessage("Please double check your order details one more time!")
 
-            initOrderDialog.setPositiveButton("Confirm!") {dialog, which ->
-                // send data into the database TODO
+            initOrderDialog.setPositiveButton("Confirm!") { dialog, which ->
 
-                val orderCompletedDialog = AlertDialog.Builder(view.context)
-                orderCompletedDialog.setTitle("Thank you, order completed!")
-                orderCompletedDialog.setMessage("Your order details can be found in 'Transaction History' section!")
-                orderCompletedDialog.setPositiveButton("Ok") {dialog, which ->
-                    goToDashboard(view)
-                }
-                orderCompletedDialog.show()
+                dbRefPlateNumbers = firebaseDatabase.getReference("plateNumbers").push()
+
+                plateNumberObject.plateNumber = plateNumberText
+                plateNumberObject.isPermanent = false
+
+                dbRefPlateNumbers.setValue(plateNumberObject)
+                    .addOnSuccessListener {
+                        val orderCompletedDialog = AlertDialog.Builder(view.context)
+                        orderCompletedDialog.setTitle("Thank you, order completed!")
+                        orderCompletedDialog.setMessage("Your order details can be found in 'Transaction History' section!")
+                        orderCompletedDialog.setPositiveButton("Ok") { dialog, which ->
+                            goToDashboard(view)
+                        }
+                        orderCompletedDialog.show()
+                    }
             }
 
             initOrderDialog.setNegativeButton("Go Back!") { dialog, which -> /* close dialog */ }
@@ -161,11 +175,38 @@ class Form : AppCompatActivity() {
         return matcher.matches()
     }
 
+    private fun getMaxCapacity() {
+        val dbRefMaxCapacity: DatabaseReference = firebaseDatabase.getReference("/maxCapacity/maxCapacity")
+        dbRefMaxCapacity.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val maxCapacityString = dataSnapshot.getValue(String::class.java)
+                maxCapacity = maxCapacityString?.toInt()!!
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                Log.d("QUERY_ERR","Database Error: ${databaseError.message}")
+            }
+        })
+    }
+
+    private fun millisecondsToDate(milliseconds: Long): String {
+        val calendar = Calendar.getInstance()
+        calendar.timeInMillis = milliseconds
+        return calendar.toString()
+    }
+
+    private fun millisecondsToDateWithFormat(milliseconds: Long): String {
+        val calendar = Calendar.getInstance()
+        calendar.timeInMillis = milliseconds
+        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        return dateFormat.format(calendar.time)
+    }
+
     fun goToPlateNumberPage(view: View) {
         val url = "https://en.wikipedia.org/wiki/Vehicle_registration_plates_of_Romania"
         val intent = Intent(Intent.ACTION_VIEW)
         intent.setData(Uri.parse(url))
-        startActivity(intent);
+        startActivity(intent)
     }
 
     fun goToDashboard(view: View) {
