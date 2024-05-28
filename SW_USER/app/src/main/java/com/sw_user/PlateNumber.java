@@ -7,7 +7,7 @@ import java.util.List;
 public class PlateNumber {
     private String plateNumber;
     private Boolean isPermanent;
-    private List<String> allowedDates = new ArrayList<>();
+    private List<String> reservedDates = new ArrayList<>();
 
     public String getPlateNumber() {
         return plateNumber;
@@ -21,16 +21,16 @@ public class PlateNumber {
     public void setIsPermanent(Boolean isPermanent) {
         this.isPermanent = isPermanent;
     }
-    public List<String> getAllowedDates() {
-        return allowedDates;
+    public List<String> getReservedDate() {
+        return reservedDates;
     }
-    public void setAllowedDates(List<String> allowedDates) {
-        this.allowedDates = allowedDates;
+    public void setReservedDates(List<String> reservedDates) {
+        this.reservedDates = reservedDates;
     }
-    public void addAllowedDate(String allowedDate) {
-        allowedDates.add(allowedDate);
+    public void addReservedDate(String date) {
+        reservedDates.add(date);
     }
-    public void emptyAllowedDates() {
-        allowedDates.clear();
+    public void emptyReservedDates() {
+        reservedDates.clear();
     }
 }

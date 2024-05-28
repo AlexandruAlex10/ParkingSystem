@@ -33,7 +33,8 @@ class Form : AppCompatActivity() {
 
     private lateinit var plateNumberObject: PlateNumber
     private var maxCapacity: Int = 0
-    private var pricePerDay: Int = 0
+    private var priceWeekday: Int = 0
+    private var priceWeekend: Int = 0
 
     private lateinit var inputPlateNumber: EditText
     private lateinit var plateNumberHelpButton: Button
@@ -50,7 +51,8 @@ class Form : AppCompatActivity() {
 
         plateNumberObject = PlateNumber()
         maxCapacity = 0
-        pricePerDay = 2
+        priceWeekday = 2
+        priceWeekend = 3
 
         inputPlateNumber = findViewById(R.id.inputPlateLicense)
         plateNumberHelpButton = findViewById(R.id.plateNumberHelpButton)
@@ -62,7 +64,7 @@ class Form : AppCompatActivity() {
         getMaxCapacity()
 
         datePicker.setOnClickListener {
-            createRangeDatePicker()
+            createDatePicker()
         }
 
         initOrderButton.setOnClickListener { view ->
@@ -122,8 +124,8 @@ class Form : AppCompatActivity() {
         return dateFormat.format(calendar.time)
     }
 
-    private fun createRangeDatePicker() {
-        val materialDatePicker = MaterialDatePicker.Builder.dateRangePicker()
+    private fun createDatePicker() {
+        val materialDatePicker = MaterialDatePicker.Builder.datePicker()
 
         val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC+2"))
         calendar.add(Calendar.DAY_OF_YEAR, 0)
@@ -157,29 +159,26 @@ class Form : AppCompatActivity() {
 
         val datePicker = materialDatePicker.build()
         datePicker.addOnPositiveButtonClickListener { selection ->
-            val startDate = selection.first
-            val endDate = selection.second
-            val startDateString = millisecondsToDateWithFormat(startDate)
-            val endDateString = millisecondsToDateWithFormat(endDate)
-            val selectedDateRange: String = if(startDate == endDate) {
-                startDateString
-            } else {
-                "$startDateString - $endDateString"
-            }
-            selectedDate.visibility = View.VISIBLE
-            selectedDate.text = selectedDateRange
+            val chosenDateInMillis: Long = selection
+            val chosenDate: String = millisecondsToDateWithFormat(chosenDateInMillis)
+            calendar.timeInMillis = chosenDateInMillis
 
-            var currentDate = startDate
-            plateNumberObject.emptyAllowedDates()
-            while (currentDate <= endDate) {
-                plateNumberObject.addAllowedDate(millisecondsToDateWithFormat(currentDate))
-                currentDate += 86_400_000
+            val dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
+
+            selectedDate.visibility = View.VISIBLE
+            selectedDate.text = chosenDate
+
+            plateNumberObject.emptyReservedDates()
+            plateNumberObject.addReservedDate(chosenDate)
+
+            val buildTextPrice = when (dayOfWeek) {
+                Calendar.SATURDAY -> "Price: $priceWeekend€"
+                Calendar.SUNDAY -> "Price: $priceWeekend€"
+                else -> "Price: $priceWeekday€"
             }
-            val calculatePrice = pricePerDay * plateNumberObject.allowedDates.size
-            val buildTextPrice = "Price: $calculatePrice€"
             textPrice.text = buildTextPrice
         }
-        datePicker.show(supportFragmentManager, "DATE_RANGE_PICKER")
+        datePicker.show(supportFragmentManager, "DATE_PICKER")
     }
 
     private fun initiateOrder (view: View, plateNumberText: String) {

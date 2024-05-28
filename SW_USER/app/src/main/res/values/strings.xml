@@ -24,6 +24,6 @@
     <string name="help">Help?</string>
     <string name="price">Price: 0€</string>
     <string name="title_activity_transactions">Transactions</string>
-    <string name="select_dates">Select Dates</string>
+    <string name="select_dates">Select Date</string>
     <string name="completed_orders">Completed Orders</string>
 </resources>
