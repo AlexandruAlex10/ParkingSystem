@@ -20,6 +20,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.getValue
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -32,6 +33,7 @@ class Form : AppCompatActivity() {
     private lateinit var dbRefPlateNumbers: DatabaseReference
 
     private lateinit var plateNumberObject: PlateNumber
+    private lateinit var foundPlateNumberId: String
     private var maxCapacity: Int = 0
     private var priceWeekday: Int = 0
     private var priceWeekend: Int = 0
@@ -50,7 +52,7 @@ class Form : AppCompatActivity() {
         firebaseDatabase = FirebaseDatabase.getInstance()
 
         plateNumberObject = PlateNumber()
-        maxCapacity = 0
+        foundPlateNumberId = ""
         priceWeekday = 2
         priceWeekend = 3
 
@@ -60,8 +62,6 @@ class Form : AppCompatActivity() {
         datePicker = findViewById(R.id.datePickerButton)
         textPrice = findViewById(R.id.textPrice)
         initOrderButton = findViewById(R.id.initOrderButton)
-
-        getMaxCapacity()
 
         datePicker.setOnClickListener {
             createDatePicker()
@@ -86,6 +86,10 @@ class Form : AppCompatActivity() {
                 return@setOnClickListener
             }
 
+            findPlateNumberByString(plateNumberText)
+
+            getMaxCapacity()
+
             initiateOrder(view, plateNumberText)
         }
     }
@@ -95,6 +99,34 @@ class Form : AppCompatActivity() {
         val pattern: Pattern = Pattern.compile(regexPattern)
         val matcher = pattern.matcher(input)
         return matcher.matches()
+    }
+
+    private fun findPlateNumberByString(plateNumber: String) {
+        val plateNumbersRef = firebaseDatabase.getReference("plateNumbers")
+        plateNumbersRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                for (childSnapshot in dataSnapshot.children) {
+                    val plateNumberData = childSnapshot.getValue<Map<String, Any>>()
+                    if (plateNumberData != null) {
+                        val plateNumberValue = plateNumberData["plateNumber"] as? String
+                        if (plateNumberValue == plateNumber) {
+                            val isPermanent = plateNumberData["isPermanent"] as? Boolean
+                            val reservedDates = plateNumberData["reservedDates"] as? List<String>
+                            foundPlateNumberId = childSnapshot.key.toString()
+                            plateNumberObject.plateNumber = plateNumberValue
+                            plateNumberObject.isPermanent = isPermanent
+                            if (plateNumberObject.isPermanent == false) {
+                                plateNumberObject.reservedDates = reservedDates
+                            }
+                        }
+                    }
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                Log.d("QUERY_ERR", "Database Error: ${databaseError.message}")
+            }
+        })
     }
 
     private fun getMaxCapacity() {
@@ -109,6 +141,11 @@ class Form : AppCompatActivity() {
                 Log.d("QUERY_ERR","Database Error: ${databaseError.message}")
             }
         })
+    }
+
+    private fun checkDateAlreadyReserved(): Boolean {
+        val checkReservedDates = plateNumberObject.reservedDates.filter { it == selectedDate.text }
+        return checkReservedDates.isEmpty()
     }
 
 //    private fun millisecondsToDate(milliseconds: Long): String {
@@ -168,9 +205,6 @@ class Form : AppCompatActivity() {
             selectedDate.visibility = View.VISIBLE
             selectedDate.text = chosenDate
 
-            plateNumberObject.emptyReservedDates()
-            plateNumberObject.addReservedDate(chosenDate)
-
             val buildTextPrice = when (dayOfWeek) {
                 Calendar.SATURDAY -> "Price: $priceWeekend€"
                 Calendar.SUNDAY -> "Price: $priceWeekend€"
@@ -188,27 +222,44 @@ class Form : AppCompatActivity() {
         initOrderDialog.setMessage("Please double check your order details one more time!")
 
         initOrderDialog.setPositiveButton("Confirm!") { dialog, which ->
+            if (plateNumberObject.isPermanent == false) {
+                if(checkDateAlreadyReserved()) {
+                    if (!plateNumberObject.plateNumber.isNullOrEmpty()) {
+                        plateNumberObject.addReservedDate(selectedDate.text.toString())
 
-            dbRefPlateNumbers = firebaseDatabase.getReference("plateNumbers").push()
-
-            plateNumberObject.plateNumber = plateNumberText
-            plateNumberObject.isPermanent = false
-
-            dbRefPlateNumbers.setValue(plateNumberObject)
-                .addOnSuccessListener {
-                    val orderCompletedDialog = AlertDialog.Builder(view.context)
-                    orderCompletedDialog.setTitle("Thank you, order completed!")
-                    orderCompletedDialog.setMessage("Your order details can be found in 'Transaction History' section!")
-                    orderCompletedDialog.setPositiveButton("Ok") { dialog, which ->
-                        goToDashboard(view)
+                        val updateRef = firebaseDatabase.getReference("/plateNumbers/$foundPlateNumberId/reservedDates")
+                        updateRef.setValue(plateNumberObject.reservedDates).addOnSuccessListener {
+                            completeOrder(view)
+                        }
                     }
-                    orderCompletedDialog.show()
-                }
-        }
+                    else {
+                        dbRefPlateNumbers = firebaseDatabase.getReference("plateNumbers").push()
+                        plateNumberObject.plateNumber = plateNumberText
+                        plateNumberObject.isPermanent = false
+                        plateNumberObject.addReservedDate(selectedDate.text.toString())
 
+                        dbRefPlateNumbers.setValue(plateNumberObject).addOnSuccessListener {
+                            completeOrder(view)
+                        }
+                    }
+                }
+                else {
+                    Toast.makeText(this@Form, "This date is already reserved!", Toast.LENGTH_SHORT).show()
+                }
+            }
+            else {
+                Toast.makeText(this@Form, "This plate number is reserved by admin!", Toast.LENGTH_SHORT).show()
+            }
+        }
         initOrderDialog.setNegativeButton("Go Back!") { dialog, which -> /* close dialog */ }
 
         initOrderDialog.show()
+    }
+
+    private fun completeOrder(view: View) {
+        Toast.makeText(this@Form, "Thank you, order completed!", Toast.LENGTH_SHORT).show()
+        startActivity(Intent(applicationContext, MainActivity::class.java))
+        finish()
     }
 
     fun goToPlateNumberPage(view: View) {
