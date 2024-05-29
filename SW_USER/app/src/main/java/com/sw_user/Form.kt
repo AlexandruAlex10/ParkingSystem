@@ -25,7 +25,6 @@ import com.google.firebase.database.getValue
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
-import java.time.LocalDateTime
 import java.util.Calendar
 import java.util.Locale
 import java.util.TimeZone
@@ -40,6 +39,7 @@ class Form : AppCompatActivity() {
     private lateinit var plateNumberObject: PlateNumber
     private lateinit var foundPlateNumberId: String
     private var maxCapacity: Int = 0
+    private lateinit var occupiedDates: MutableList<String>
     private var price: Int = 0
 
     private lateinit var inputPlateNumber: EditText
@@ -59,6 +59,7 @@ class Form : AppCompatActivity() {
 
         plateNumberObject = PlateNumber()
         foundPlateNumberId = ""
+        occupiedDates = ArrayList()
 
         inputPlateNumber = findViewById(R.id.inputPlateLicense)
         plateNumberHelpButton = findViewById(R.id.plateNumberHelpButton)
@@ -66,6 +67,10 @@ class Form : AppCompatActivity() {
         datePicker = findViewById(R.id.datePickerButton)
         textPrice = findViewById(R.id.textPrice)
         initOrderButton = findViewById(R.id.initOrderButton)
+
+        addOccupiedDates()
+
+        getMaxCapacity()
 
         datePicker.setOnClickListener {
             createDatePicker()
@@ -91,8 +96,6 @@ class Form : AppCompatActivity() {
             }
 
             findPlateNumberByString(plateNumberText)
-
-            getMaxCapacity()
 
             initiateOrder(view, plateNumberText)
         }
@@ -177,16 +180,22 @@ class Form : AppCompatActivity() {
         calendar.add(Calendar.DAY_OF_YEAR, 1)
         val tomorrowInMillis = calendar.timeInMillis
         calendar.add(Calendar.MONTH, 1)
-        val lastDayNextMonthInMillis = calendar.timeInMillis
+        val tomorrowNextMonthInMillis = calendar.timeInMillis
 
         val constraintsBuilder = CalendarConstraints.Builder()
         constraintsBuilder.setStart(tomorrowInMillis)
-        constraintsBuilder.setEnd(lastDayNextMonthInMillis)
+        constraintsBuilder.setEnd(tomorrowNextMonthInMillis)
         constraintsBuilder.setValidator(object : CalendarConstraints.DateValidator {
             val todayInMillis = MaterialDatePicker.todayInUtcMilliseconds()
 
             override fun isValid(date: Long): Boolean {
-                return date > todayInMillis
+                var countPlateNumber: Int = 0
+                occupiedDates.forEach {item ->
+                    if (item == millisecondsToDateWithSimpleFormat(date)) {
+                        countPlateNumber++
+                    }
+                }
+                return date in (todayInMillis + 1)..<tomorrowNextMonthInMillis && countPlateNumber < maxCapacity
             }
 
             override fun writeToParcel(dest: Parcel, flags: Int) {
@@ -229,6 +238,30 @@ class Form : AppCompatActivity() {
         datePicker.show(supportFragmentManager, "DATE_PICKER")
     }
 
+    private fun addOccupiedDates() {
+        val plateNumbersRef = firebaseRealtimeDatabase.getReference("plateNumbers")
+        plateNumbersRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                for (childSnapshot in dataSnapshot.children) {
+                    val plateNumberData = childSnapshot.getValue<Map<String, Any>>()
+                    if (plateNumberData != null) {
+                        val isPermanent = plateNumberData["isPermanent"] as? Boolean
+                        if (isPermanent == false) {
+                            val reservedDates = plateNumberData["reservedDates"] as? List<String>
+                            reservedDates?.forEach { item ->
+                                occupiedDates.add(item)
+                            }
+                        }
+                    }
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                Log.d("QUERY_ERR", "Database Error: ${databaseError.message}")
+            }
+        })
+    }
+
     private fun initiateOrder (view: View, plateNumberText: String) {
 
         val initOrderDialog = AlertDialog.Builder(view.context)
@@ -265,6 +298,8 @@ class Form : AppCompatActivity() {
             }
             else {
                 Toast.makeText(this@Form, "This plate number is reserved by admin!", Toast.LENGTH_SHORT).show()
+                startActivity(Intent(applicationContext, Form::class.java))
+                finish()
             }
         }
         initOrderDialog.setNegativeButton("Go Back!") { dialog, which -> /* close dialog */ }
