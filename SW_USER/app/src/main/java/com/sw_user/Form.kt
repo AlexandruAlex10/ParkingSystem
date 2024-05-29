@@ -15,13 +15,17 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.getValue
+import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
 import java.util.Calendar
 import java.util.Locale
 import java.util.TimeZone
@@ -29,14 +33,14 @@ import java.util.regex.Pattern
 
 class Form : AppCompatActivity() {
 
-    private lateinit var firebaseDatabase: FirebaseDatabase
-    private lateinit var dbRefPlateNumbers: DatabaseReference
+    private lateinit var firebaseAuth: FirebaseAuth
+    private lateinit var firebaseRealtimeDatabase: FirebaseDatabase
+    private lateinit var firebaseFirestoreDatabase: FirebaseFirestore
 
     private lateinit var plateNumberObject: PlateNumber
     private lateinit var foundPlateNumberId: String
     private var maxCapacity: Int = 0
-    private var priceWeekday: Int = 0
-    private var priceWeekend: Int = 0
+    private var price: Int = 0
 
     private lateinit var inputPlateNumber: EditText
     private lateinit var plateNumberHelpButton: Button
@@ -49,12 +53,12 @@ class Form : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_form)
 
-        firebaseDatabase = FirebaseDatabase.getInstance()
+        firebaseAuth = FirebaseAuth.getInstance()
+        firebaseRealtimeDatabase = FirebaseDatabase.getInstance()
+        firebaseFirestoreDatabase = FirebaseFirestore.getInstance()
 
         plateNumberObject = PlateNumber()
         foundPlateNumberId = ""
-        priceWeekday = 2
-        priceWeekend = 3
 
         inputPlateNumber = findViewById(R.id.inputPlateLicense)
         plateNumberHelpButton = findViewById(R.id.plateNumberHelpButton)
@@ -102,7 +106,7 @@ class Form : AppCompatActivity() {
     }
 
     private fun findPlateNumberByString(plateNumber: String) {
-        val plateNumbersRef = firebaseDatabase.getReference("plateNumbers")
+        val plateNumbersRef = firebaseRealtimeDatabase.getReference("plateNumbers")
         plateNumbersRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 for (childSnapshot in dataSnapshot.children) {
@@ -130,7 +134,7 @@ class Form : AppCompatActivity() {
     }
 
     private fun getMaxCapacity() {
-        val dbRefMaxCapacity: DatabaseReference = firebaseDatabase.getReference("/maxCapacity/maxCapacity")
+        val dbRefMaxCapacity: DatabaseReference = firebaseRealtimeDatabase.getReference("/maxCapacity/maxCapacity")
         dbRefMaxCapacity.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val maxCapacityString = dataSnapshot.getValue(String::class.java)
@@ -148,16 +152,17 @@ class Form : AppCompatActivity() {
         return checkReservedDates.isEmpty()
     }
 
-//    private fun millisecondsToDate(milliseconds: Long): String {
-//        val calendar = Calendar.getInstance()
-//        calendar.timeInMillis = milliseconds
-//        return calendar.toString()
-//    }
-
-    private fun millisecondsToDateWithFormat(milliseconds: Long): String {
+    private fun millisecondsToDateWithSimpleFormat(milliseconds: Long): String {
         val calendar = Calendar.getInstance()
         calendar.timeInMillis = milliseconds
         val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        return dateFormat.format(calendar.time)
+    }
+
+    private fun millisecondsToDateWithDetailedFormat(milliseconds: Long): String {
+        val calendar = Calendar.getInstance()
+        calendar.timeInMillis = milliseconds
+        val dateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault())
         return dateFormat.format(calendar.time)
     }
 
@@ -167,7 +172,7 @@ class Form : AppCompatActivity() {
         val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC+2"))
         calendar.add(Calendar.DAY_OF_YEAR, 0)
         val todayDate = calendar.timeInMillis
-        val currentDateString = millisecondsToDateWithFormat(todayDate)
+        val currentDateString = millisecondsToDateWithSimpleFormat(todayDate)
         materialDatePicker.setTitleText("Current Date: $currentDateString")
         calendar.add(Calendar.DAY_OF_YEAR, 1)
         val tomorrowInMillis = calendar.timeInMillis
@@ -197,7 +202,7 @@ class Form : AppCompatActivity() {
         val datePicker = materialDatePicker.build()
         datePicker.addOnPositiveButtonClickListener { selection ->
             val chosenDateInMillis: Long = selection
-            val chosenDate: String = millisecondsToDateWithFormat(chosenDateInMillis)
+            val chosenDate: String = millisecondsToDateWithSimpleFormat(chosenDateInMillis)
             calendar.timeInMillis = chosenDateInMillis
 
             val dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
@@ -206,9 +211,18 @@ class Form : AppCompatActivity() {
             selectedDate.text = chosenDate
 
             val buildTextPrice = when (dayOfWeek) {
-                Calendar.SATURDAY -> "Price: $priceWeekend€"
-                Calendar.SUNDAY -> "Price: $priceWeekend€"
-                else -> "Price: $priceWeekday€"
+                Calendar.SATURDAY -> {
+                    price = 3
+                    "Price: ${price}€"
+                }
+                Calendar.SUNDAY -> {
+                    price = 3
+                    "Price: ${price}€"
+                }
+                else -> {
+                    price = 2
+                    "Price: ${price}€"
+                }
             }
             textPrice.text = buildTextPrice
         }
@@ -227,18 +241,20 @@ class Form : AppCompatActivity() {
                     if (!plateNumberObject.plateNumber.isNullOrEmpty()) {
                         plateNumberObject.addReservedDate(selectedDate.text.toString())
 
-                        val updateRef = firebaseDatabase.getReference("/plateNumbers/$foundPlateNumberId/reservedDates")
+                        val updateRef = firebaseRealtimeDatabase.getReference("/plateNumbers/$foundPlateNumberId/reservedDates")
                         updateRef.setValue(plateNumberObject.reservedDates).addOnSuccessListener {
+                            saveOrderDetailsInDatabase()
                             completeOrder(view)
                         }
                     }
                     else {
-                        dbRefPlateNumbers = firebaseDatabase.getReference("plateNumbers").push()
+                        val dbRefPlateNumbers: DatabaseReference = firebaseRealtimeDatabase.getReference("plateNumbers").push()
                         plateNumberObject.plateNumber = plateNumberText
                         plateNumberObject.isPermanent = false
                         plateNumberObject.addReservedDate(selectedDate.text.toString())
 
                         dbRefPlateNumbers.setValue(plateNumberObject).addOnSuccessListener {
+                            saveOrderDetailsInDatabase()
                             completeOrder(view)
                         }
                     }
@@ -254,6 +270,18 @@ class Form : AppCompatActivity() {
         initOrderDialog.setNegativeButton("Go Back!") { dialog, which -> /* close dialog */ }
 
         initOrderDialog.show()
+    }
+
+    private fun saveOrderDetailsInDatabase() {
+        val uID = firebaseAuth.currentUser!!.uid
+        val documentReference: DocumentReference =
+            firebaseFirestoreDatabase.collection("client").document(uID).collection("orders").document()
+        val order: MutableMap<String, Any> = mutableMapOf()
+        order["plate number"] = plateNumberObject.plateNumber
+        order["date reserved"] = selectedDate.text
+        order["price"] = price
+        order["order completed"] = millisecondsToDateWithDetailedFormat(System.currentTimeMillis())
+        documentReference.set(order)
     }
 
     private fun completeOrder(view: View) {
