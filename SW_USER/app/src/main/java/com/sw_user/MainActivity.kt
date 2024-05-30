@@ -7,7 +7,6 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.ComponentActivity
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -48,9 +47,9 @@ class MainActivity : AppCompatActivity() {
         uID = firebaseAuth.currentUser!!.uid
         documentReference = firebaseDatabase.collection("client").document(uID)
 
-        documentReference.addSnapshotListener(this@MainActivity, EventListener<DocumentSnapshot> { documentSnapshot, e ->
+        documentReference.addSnapshotListener(this@MainActivity) { documentSnapshot, e ->
             email.text = documentSnapshot!!.getString("email")
-        })
+        }
 
         user = firebaseAuth.currentUser!!
 

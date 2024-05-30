@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <androidx.constraintlayout.widget.ConstraintLayout
-
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -15,25 +13,101 @@
         android:id="@+id/textReserveSpot"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
         android:fontFamily="sans-serif-black"
         android:text="@string/completed_orders"
         android:textAlignment="center"
         android:textAppearance="@android:style/TextAppearance.Material.Large"
-        android:textColor="#FFFFFF"
-        android:textSize="45sp"
+        android:textSize="40sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/exitButton"
+        app:layout_constraintBottom_toTopOf="@+id/tableHeader"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.38"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0" />
+
+    <TableLayout
+        android:id="@+id/tableHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:stretchColumns="*"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textReserveSpot">
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/plate_number_table"
+                android:textAlignment="center"
+                android:textAppearance="@android:style/TextAppearance.Material.Large"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/date_reserved"
+                android:textAlignment="center"
+                android:textAppearance="@android:style/TextAppearance.Material.Large"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/price_table"
+                android:textAlignment="center"
+                android:textAppearance="@android:style/TextAppearance.Material.Large"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/completed_on"
+                android:textAlignment="center"
+                android:textAppearance="@android:style/TextAppearance.Material.Large"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+
+        </TableRow>
+
+    </TableLayout>
+
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        app:layout_constraintBottom_toTopOf="@+id/exitButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tableHeader">
+
+        <TableLayout
+            android:id="@+id/tableContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:stretchColumns="*">
+
+        </TableLayout>
+    </ScrollView>
 
     <Button
         android:id="@+id/exitButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="350dp"
         android:background="@drawable/my_button"
         android:onClick="goToDashboard"
         android:text="@string/exit"
@@ -43,6 +117,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/scrollView" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

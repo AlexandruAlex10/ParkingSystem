@@ -198,7 +198,7 @@ class Form : AppCompatActivity() {
             val todayInMillis = MaterialDatePicker.todayInUtcMilliseconds()
 
             override fun isValid(date: Long): Boolean {
-                var countPlateNumber: Int = 0
+                var countPlateNumber = 0
                 occupiedDates.forEach {item ->
                     if (item == millisecondsToDateWithSimpleFormat(date)) {
                         countPlateNumber++

@@ -26,4 +26,8 @@
     <string name="title_activity_transactions">Transactions</string>
     <string name="select_dates">Select Date</string>
     <string name="completed_orders">Completed Orders</string>
+    <string name="plate_number_table">Plate Number</string>
+    <string name="date_reserved">Booked Date</string>
+    <string name="price_table">Price (€)</string>
+    <string name="completed_on">Finalized On</string>
 </resources>
