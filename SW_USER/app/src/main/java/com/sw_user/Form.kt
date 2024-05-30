@@ -26,6 +26,7 @@ import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
 import java.util.regex.Pattern
@@ -68,9 +69,11 @@ class Form : AppCompatActivity() {
         textPrice = findViewById(R.id.textPrice)
         initOrderButton = findViewById(R.id.initOrderButton)
 
-        addOccupiedDates()
+        deleteExpiredDates()
 
         getMaxCapacity()
+
+        addOccupiedDates()
 
         datePicker.setOnClickListener {
             createDatePicker()
@@ -153,6 +156,12 @@ class Form : AppCompatActivity() {
     private fun checkDateAlreadyReserved(): Boolean {
         val checkReservedDates = plateNumberObject.reservedDates.filter { it == selectedDate.text }
         return checkReservedDates.isEmpty()
+    }
+
+    fun dateWithSimpleFormatToMilliseconds(dateString: String): Long {
+        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        val date: Date = dateFormat.parse(dateString)
+        return date.time
     }
 
     private fun millisecondsToDateWithSimpleFormat(milliseconds: Long): String {
@@ -250,6 +259,42 @@ class Form : AppCompatActivity() {
                             val reservedDates = plateNumberData["reservedDates"] as? List<String>
                             reservedDates?.forEach { item ->
                                 occupiedDates.add(item)
+                            }
+                        }
+                    }
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                Log.d("QUERY_ERR", "Database Error: ${databaseError.message}")
+            }
+        })
+    }
+
+    private fun deleteExpiredDates() {
+        val plateNumbersRef = firebaseRealtimeDatabase.getReference("plateNumbers")
+        plateNumbersRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                for (childSnapshot in dataSnapshot.children) {
+                    val plateNumberData = childSnapshot.getValue<Map<String, Any>>()
+                    if (plateNumberData != null) {
+                        val isPermanent = plateNumberData["isPermanent"] as? Boolean
+                        if (isPermanent == false) {
+                            val currentMilliseconds = MaterialDatePicker.todayInUtcMilliseconds()
+                            val reservedDates = plateNumberData["reservedDates"] as? MutableList<String>
+                            if (reservedDates != null) {
+                                val filteredDates = reservedDates.filter { dateString ->
+                                    val dateInMilliseconds = dateWithSimpleFormatToMilliseconds(dateString)
+                                    dateInMilliseconds >= currentMilliseconds - 86_400_000
+                                }
+                                val key = childSnapshot.key
+                                if (key != null) {
+                                    if (filteredDates.isEmpty()) {
+                                        plateNumbersRef.child(key).removeValue()
+                                    } else {
+                                        plateNumbersRef.child(key).child("reservedDates").setValue(filteredDates)
+                                    }
+                                }
                             }
                         }
                     }
