@@ -25,6 +25,8 @@ import com.google.firebase.database.getValue
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
+import java.time.ZoneId
+import java.time.ZonedDateTime
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -181,11 +183,21 @@ class Form : AppCompatActivity() {
     private fun createDatePicker() {
         val materialDatePicker = MaterialDatePicker.Builder.datePicker()
 
-        val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC+2"))
+        val timeNow = ZonedDateTime.now(ZoneId.of("Europe/Bucharest"))
+        val timeZone = timeNow.zone
+        val zoneRules = timeZone.rules
+        val isDaylightSavingsTime = zoneRules.isDaylightSavings(timeNow.toInstant())
+
+        val calendar: Calendar = if (isDaylightSavingsTime) {
+            Calendar.getInstance(TimeZone.getTimeZone("GMT+3"))
+        } else {
+            Calendar.getInstance(TimeZone.getTimeZone("GMT+2"))
+        }
+
         calendar.add(Calendar.DAY_OF_YEAR, 0)
         val todayDate = calendar.timeInMillis
-        val currentDateString = millisecondsToDateWithSimpleFormat(todayDate)
-        materialDatePicker.setTitleText("Current Date: $currentDateString")
+        val currentDateString = millisecondsToDateWithDetailedFormat(todayDate)
+        materialDatePicker.setTitleText("Time: $currentDateString")
         calendar.add(Calendar.DAY_OF_YEAR, 1)
         val tomorrowInMillis = calendar.timeInMillis
         calendar.add(Calendar.MONTH, 1)
