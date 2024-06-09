@@ -1,7 +1,9 @@
 # ParkingSystem
 
 # HW
-Source code from Raspberry Pi
+Source code from Raspberry Pi.
+Open HW folder in a terminal and execute command:
+python script.py
 
 # SW_ADMIN
 
