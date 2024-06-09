@@ -82,10 +82,15 @@ class Login : AppCompatActivity() {
             passwordResetDialog.setPositiveButton("Submit") { dialog, which ->
                 val email = inputEmailPasswordReset.text.toString()
 
-                firebaseAuth.sendPasswordResetEmail(email).addOnSuccessListener {
-                    Toast.makeText(this@Login, "Email sent, check your inbox!", Toast.LENGTH_SHORT).show()
-                }.addOnFailureListener { e ->
-                    Toast.makeText(this@Login, "Email not sent! Error: " + e.message, Toast.LENGTH_SHORT).show()
+                if (TextUtils.isEmpty(email)) {
+                    Toast.makeText(this@Login, "Please enter an email!", Toast.LENGTH_SHORT).show()
+                }
+                else {
+                    firebaseAuth.sendPasswordResetEmail(email).addOnSuccessListener {
+                        Toast.makeText(this@Login, "Email sent, check your inbox!", Toast.LENGTH_SHORT).show()
+                    }.addOnFailureListener { e ->
+                        Toast.makeText(this@Login, "Email not sent! Error: " + e.message, Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
 

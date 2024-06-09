@@ -69,7 +69,7 @@ def format_plate_number(plate_number):
 def take_image(IMAGE_PATH):
     #initialize camera
     pygame.camera.init()
-    cam = pygame.camera.Camera("/dev/video0", (640, 480))
+    cam = pygame.camera.Camera("/dev/video0", (800, 600))
     sleep(0.1)
     cam.start()
     sleep(0.1)
@@ -260,7 +260,7 @@ def open_or_close_barrier_indefinitely():
     
             inchideBariera = bool(stareBarieraInchisa[-1])
             
-            sleep(30)
+            sleep(5)
 
         #turn off led
         turn_led(False)
@@ -285,7 +285,7 @@ def open_or_close_barrier_indefinitely():
         
             deschideBariera = bool(stareBarieraDeschisa[-1])
 
-            sleep(30)
+            sleep(5)
         
         print ("System is recovering back to normal from 'barrier opened indefinitely' state...")
         

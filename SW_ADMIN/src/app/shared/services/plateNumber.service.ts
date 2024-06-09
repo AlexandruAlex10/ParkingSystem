@@ -55,7 +55,7 @@ export class PlateNumberService {
   postNewPlateNumber(plateNumber: string | null, isPermanent: boolean) {
     const db = getDatabase();
     const postListRef = ref(db, this.dbPathPlateNumbers);
-    const queryRef = query(postListRef, orderByChild('plateNumbers'), equalTo(plateNumber));
+    const queryRef = query(postListRef, orderByChild('plateNumber'), equalTo(plateNumber));
     get(queryRef).then((snapshot) => {
       if (!snapshot.exists()) {
         const newPostRef = push(postListRef);
